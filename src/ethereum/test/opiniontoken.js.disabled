@@ -1,0 +1,74 @@
+const OpinionToken = artifacts.require("OpinionToken");
+
+contract('OpinionToken', (accounts) => {
+  let opinionTokenInstance;
+  beforeEach(async () => {
+    opinionTokenInstance = await OpinionToken.deployed();
+  });
+
+  it('should put 0 OpinionToken in the first account', async () => {
+    //const opinionTokenInstance = await OpinionToken.deployed();
+    const balance = await opinionTokenInstance.balanceOf.call(accounts[0]);
+
+    assert.equal(balance.valueOf(), 0, "0 wasn't in the first account");
+  });
+
+
+  it('should transfer token correctly', async () => {
+    //const opinionTokenInstance = await OpinionToken.deployed();
+
+    // Setup 2 accounts.
+    const accountOne = accounts[0];
+    const accountTwo = accounts[1];
+
+    const amount = 1000;
+    // Mint the amount to accountOne so it has the balance to transfer
+    await opinionTokenInstance.mint(amount); 
+
+    // Get balances of first and second account before transfer
+    const accountOneStartingBalance = (await opinionTokenInstance.balanceOf.call(accountOne)).toNumber();
+    const accountTwoStartingBalance = (await opinionTokenInstance.balanceOf.call(accountTwo)).toNumber();
+
+    // Make transaction from first account to second.
+
+    await opinionTokenInstance.transfer(accountTwo, amount); 
+
+    // Get balances of first and second account after the transactions.
+    const accountOneEndingBalance = (await opinionTokenInstance.balanceOf.call(accountOne)).toNumber();
+    const accountTwoEndingBalance = (await opinionTokenInstance.balanceOf.call(accountTwo)).toNumber();
+
+
+    assert.equal(accountOneEndingBalance, accountOneStartingBalance - amount, "Amount wasn't correctly taken from the sender");
+    assert.equal(accountTwoEndingBalance, accountTwoStartingBalance + amount, "Amount wasn't correctly sent to the receiver");
+  });
+
+  it('should approve correctly', async () => {
+
+    // Setup 2 accounts.
+    const accountOne = accounts[0];
+    const accountTwo = accounts[1];
+    
+
+    const amount = 1000;
+    // Mint the amount to accountOne so it has the balance to transfer
+    await opinionTokenInstance.mint(amount); 
+    await opinionTokenInstance.transfer(accountTwo, amount);
+
+    // Get balances of first and second account before transfer
+    const accountOneStartingBalance = (await opinionTokenInstance.balanceOf.call(accountOne)).toNumber();
+    const accountTwoStartingBalance = (await opinionTokenInstance.balanceOf.call(accountTwo)).toNumber();
+
+    // Approve allowance from second account to first.
+    await opinionTokenInstance.approve(accountOne, amount, {from: accountTwo}); 
+    assert.equal((await opinionTokenInstance.allowance.call(accountTwo, accountOne)), amount, "Allowance() didn't return the expected value");
+    
+    //transfer the full allowance amount from accountTwo back to accountOne
+    await opinionTokenInstance.transferFrom(accountTwo, accountOne, amount);
+    // Get balances of first and second account after the transactions.
+    const accountOneEndingBalance = (await opinionTokenInstance.balanceOf.call(accountOne)).toNumber();
+    const accountTwoEndingBalance = (await opinionTokenInstance.balanceOf.call(accountTwo)).toNumber();
+
+    assert.equal(accountOneEndingBalance, accountOneStartingBalance + amount, "Amount wasn't correctly taken from the sender");
+    assert.equal(accountTwoEndingBalance, accountTwoStartingBalance - amount, "Amount wasn't correctly sent to the receiver");
+  });
+});

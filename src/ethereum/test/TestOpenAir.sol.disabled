@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity >=0.4.25;
+
+import "truffle/Assert.sol";
+import "truffle/DeployedAddresses.sol";
+import "../contracts/OpenAir.sol";
+import "../contracts/OpinionToken.sol";
+
+contract TestOpinionToken {
+
+  function testInitialBalanceUsingDeployedContract() public {
+    address platformContractAddress = DeployedAddresses.OpenAir();
+    OpinionToken token = OpenAir(platformContractAddress).getTokenContract();
+
+    uint expected = 10000000;
+
+    Assert.equal(token.balanceOf(platformContractAddress), expected, "PlatformContract as tokenContract owner should have 10000000 OpinionToken initially after one subject Area is created during construction.");
+  }
+
+  function testInitialBalanceWithNewOpinionToken() public {
+    OpenAir platformContract = new OpenAir();
+    OpinionToken token = platformContract.getTokenContract();
+
+    uint expected = 10000000;
+
+    Assert.equal(token.balanceOf(address(platformContract)), expected, "PlatformContract as tokenContract owner should have 10000000 OpinionToken initially after one subject Area is created during construction.");
+  }
+
+}

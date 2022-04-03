@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity >=0.4.25;
+
+import "truffle/Assert.sol";
+import "truffle/DeployedAddresses.sol";
+import "../contracts/OpinionToken.sol";
+
+contract TestOpinionToken {
+
+  function testInitialBalanceUsingDeployedContract() public {
+    OpinionToken token = OpinionToken(DeployedAddresses.OpinionToken());
+
+    uint expected = 0;
+
+    Assert.equal(token.balanceOf(msg.sender), expected, "Owner should have 0 OpinionToken initially");
+  }
+
+  function testInitialBalanceWithNewOpinionToken() public {
+    OpinionToken token = new OpinionToken();
+
+    uint expected = 0;
+
+    Assert.equal(token.balanceOf(address(this)), expected, "Owner should have 0 OpinionToken initially");
+  }
+
+
+  function testApproveAndCall() public {
+    OpinionToken token = new OpinionToken();
+    token.mint(1000);
+  
+    address toAddress = 0x8f3F4D52733e944D3A99c32499187F573C71FAb7;
+    token.approveAndCall(toAddress, 500, "Haha");
+    Assert.isTrue(false, "Purposely failed to show events on Truffle Test");    
+  }
+
+
+  function testApproveAndTransfter() public {
+    OpinionToken token = new OpinionToken();
+    token.mint(1000);
+  
+    address toAddress = 0x8f3F4D52733e944D3A99c32499187F573C71FAb7;
+    token.approve(toAddress, 500);
+    bool result = token.transfer(toAddress, 500);
+    Assert.isTrue(result, "Transfer should suceed.");
+    Assert.equal(token.balanceOf(msg.sender), 500, "Sender should have 500 tokens left");    
+  }
+
+}
