@@ -37,24 +37,29 @@ export class OpenAir extends Component {
     const contract = createOpenAirContract(this.getOpenAirAddress())
 
     var tokenContractAddress = 0
+    var fields
     try {
       tokenContractAddress = await contract.methods.getTokenContractAddress().call()  
+      fields = await contract.methods.getFieldNames().call()
     } catch (err) {
       console.log(err)
     }
 
     return {
       address: address,   
-      tokenContractAddress: tokenContractAddress
+      tokenContractAddress: tokenContractAddress,
+      fields: fields.length,
+      currentField: fields[0]
     }
   }
 
   render() {
     return (
       <div>
-          <h1>Hello, OpenAir at {this.state.openAir.address}</h1>
-          <h1>Hello, OpenAir at {this.props.match.params.address}</h1>
-          <h1>tokenContractAddress = {this.state.openAir.tokenContractAddress} </h1>
+          <h1>OpenAirContractAddress: {this.state.openAir.address}</h1>
+          <h1>tokenContractAddress : {this.state.openAir.tokenContractAddress} </h1>
+          <h1>Number of Fields: {this.state.openAir.fields}</h1>
+          <h1>Current Field : {this.state.openAir.currentField} </h1>
       </div>
     );
   }
