@@ -56,13 +56,14 @@ contract OpenAir is ApprovalCallBack {
         moderator = creator; //initially
 
         //some initial fields and areas for testing of web app
-        //addField("CIBC");
-        //addArea("CIBC", "Innovation");
-        //addArea("CIBC", "Governance");
-        //addArea("CIBC", "Work and Life");
-        //addArea("CIBC", "Environment");
-        //addField("TD");
-        //addField("Scotia Bank");
+        addField("CIBC");
+        addArea("CIBC", "Innovation");
+        addArea("CIBC", "Governance");
+        addArea("CIBC", "Work and Life");
+        addArea("CIBC", "Environment");
+        addField("TD");
+        addField("Scotia Bank");
+        
         emit OpenAirInstanceCreated(creator, address(this));
     }
     
