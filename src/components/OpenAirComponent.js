@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { createOpenAirContract } from '../web3/openAirContract'
-import { web3 } from '../web3/web3'
 import { Tab, Header } from 'semantic-ui-react'
+
 
 export class OpenAirComponent extends Component {
 
@@ -17,25 +17,21 @@ export class OpenAirComponent extends Component {
   }
 
   async componentDidMount() {
-    const address = this.getOpenAirAddress()
+    const address = await this.getOpenAirAddress()
     const currentOpenAir = await this.getOpenAir(address)
     this.setState({
       openAir: currentOpenAir
     })
   }
 
-  getOpenAirAddress() {
-    var contractAddress = this.props.match.params.address
-    
-    //const networkId = await web3.eth.net.getId();
-    //contractAddress = OpenAir.networks[networkId].address;
-    
+  async getOpenAirAddress() {
+    var contractAddress = this.props.match.params.address    
     return contractAddress
   }
 
   async getOpenAir(address) {
 
-    const contract = createOpenAirContract(this.getOpenAirAddress())
+    const contract = createOpenAirContract(await this.getOpenAirAddress())
 
     var tokenContractAddress = 0
     var fields
@@ -52,7 +48,7 @@ export class OpenAirComponent extends Component {
       address: address,   
       creator: creator,
       tokenContractAddress: tokenContractAddress,
-      fields: fields.length,
+      fields: fields,
       currentField: fields[0],
     }
   }
@@ -66,7 +62,7 @@ export class OpenAirComponent extends Component {
           <Header as='h5'>Opinion Token contract address: {this.state.openAir.tokenContractAddress}</Header>
           <h2>Number of Fields: {this.state.openAir.fields}</h2>
           <h2>Current Field : {this.state.openAir.currentField} </h2>
-          <Tab panes={this.fieldPanes()} />
+          <div><Tab panes={this.fieldPanes()} /></div>
       </div>
     );
   }
