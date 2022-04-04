@@ -27,7 +27,7 @@ export class OpenAirComponent extends Component {
     var contractAddress = this.props.match.params.address
     
     //const networkId = await web3.eth.net.getId();
-    //const contractAddress = OpenAir.networks[networkId].address;
+    //contractAddress = OpenAir.networks[networkId].address;
     
     return contractAddress
   }
@@ -59,11 +59,12 @@ export class OpenAirComponent extends Component {
   render() {
     return (
       <div>
-          <h1>OpenAirContractAddress: {this.state.openAir.address}</h1>
-          <h1>contract creator : {this.state.openAir.creator} </h1>
-          <h1>tokenContractAddress : {this.state.openAir.tokenContractAddress} </h1>
-          <h1>Number of Fields: {this.state.openAir.fields}</h1>
-          <h1>Current Field : {this.state.openAir.currentField} </h1>
+          <h2>Open-Air Speech Platform</h2>
+          <h2>OpenAirContractAddress: {this.state.openAir.address}</h2>
+          <h2>contract creator : {this.state.openAir.creator} </h2>
+          <h2>tokenContractAddress : {this.state.openAir.tokenContractAddress} </h2>
+          <h2>Number of Fields: {this.state.openAir.fields}</h2>
+          <h2>Current Field : {this.state.openAir.currentField} </h2>
       </div>
     );
   }
