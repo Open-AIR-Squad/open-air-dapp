@@ -68,3 +68,8 @@ Area - subject area, non-department-specific, i.e. open subjects, such as:
     Governance
     Work and Life
     Environment
+-----------------------------------------
+ganache-cli -i 1337 -q --gasLimit=0x1fffffffffffff --allowUnlimitedContractSize -e 1000000000
+truffle migrate --reset --network ganache_cli
+truffle test --network ganache_cli --show-events
+

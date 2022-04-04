@@ -53,12 +53,16 @@ contract OpenAir is ApprovalCallBack {
     constructor () {
         tokenContract = new OpinionToken();
         creator = msg.sender;
-        moderator = creator; //for now
+        moderator = creator; //initially
+
+        //some initial fields and areas for testing of web app
         //addField("CIBC");
         //addArea("CIBC", "Innovation");
         //addArea("CIBC", "Governance");
         //addArea("CIBC", "Work and Life");
         //addArea("CIBC", "Environment");
+        //addField("TD");
+        //addField("Scotia Bank");
         emit OpenAirInstanceCreated(creator, address(this));
     }
     
@@ -68,6 +72,10 @@ contract OpenAir is ApprovalCallBack {
 
     function getTokenContractAddress() public view returns (address) {
         return address(tokenContract);
+    }
+
+    function getContractCreator() public view returns (address) {
+        return creator;
     }
 	
     function getChargePerVote() public view returns (uint256) {

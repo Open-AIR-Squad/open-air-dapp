@@ -14,7 +14,9 @@ module.exports = {
     test: {
       host: "127.0.0.1",
       port: 9545,
-      network_id: "*"
+      network_id: "*",
+      gasPrice:   0x1,
+      gas:        0x1fffffffffffff      
     },
     ganache: {
       host: "172.31.192.1",
