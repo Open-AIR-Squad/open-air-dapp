@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { createOpenAirContract } from '../web3/openAirContract'
-import { Tab, Header } from 'semantic-ui-react'
+import { Tab, Header, Form } from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -56,13 +56,20 @@ export class OpenAirComponent extends Component {
   render() {
     return (
       <div>
-          <h1>Open-Air Speech Platform</h1>
-          <Header as='h5'>Contract address: {this.state.openAir.address}</Header>
-          <Header as='h5'>contract creator: {this.state.openAir.creator} </Header>
-          <Header as='h5'>Opinion Token contract address: {this.state.openAir.tokenContractAddress}</Header>
-          <h2>Number of Fields: {this.state.openAir.fields}</h2>
-          <h2>Current Field : {this.state.openAir.currentField} </h2>
-          <div><Tab panes={this.fieldPanes()} /></div>
+        <Header as='h1'>OPEN AIR</Header>
+        <div className="ui divider"></div>
+        <div>
+          <Header as='h6'>Contract address: {this.state.openAir.address}</Header>
+          <Header as='h6'>contract creator: {this.state.openAir.creator} </Header>
+          <Header as='h6'>Opinion Token contract address: {this.state.openAir.tokenContractAddress}</Header>
+        </div>
+        <div>
+          <Form>
+            <Form.Input fluid label='Title' placeholder='Title' />
+            <Form.TextArea placeholder='...' />
+            <Form.Button>Submit</Form.Button>
+          </Form>
+        </div>
       </div>
     );
   }
