@@ -6,6 +6,10 @@ import { Header, Form, Divider, Segment, Button, Icon, Label, Tab } from 'semant
 
 export class OpenAirComponent extends Component {
 
+  TAB_TYPE_FIELD = '0'
+  TAB_TYPE_AREA = '1'
+
+
   state = {
     openAir: {
       address: 'invalid',
@@ -92,7 +96,14 @@ export class OpenAirComponent extends Component {
   render() {
     return (
       <div>
-        <Header as='h1' color='blue'>OPEN AIR</Header>
+        <Header as='h1' icon color="blue">
+          <Icon name='skyatlas' />
+          Open Air
+          <Header.Subheader color="blue">
+            a smart contract based autonomous speech platform
+          </Header.Subheader>
+        </Header>
+r>
         <div className="ui divider"></div>
         <div>
           {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract address:', this.state.openAir.address)}
@@ -109,20 +120,17 @@ export class OpenAirComponent extends Component {
           <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header> 
           
           <div>
-            <Tab menu={{ pointing: true }} panes={this.getPanes(this.state.openAir.fields)} />
-            <Tab menu={{ fluid: true, vertical: true, tabular: true }} panes={this.getPanes(this.state.openAir.areas)} />
+            <Tab menu={{ pointing: true }} panes={this.getPanes(this.state.openAir.fields, this.TAB_TYPE_FIELD)} />
+            <Tab menu={{ fluid: true, vertical: true, tabular: true }} panes={this.getPanes(this.state.openAir.areas, this.TAB_TYPE_AREA)} />
           </div>              
         </div>
-        <div>
-          <Button primary onClick={this.onParticipate}>Participate</Button> 
-          <p>(Award per area participation: {this.state.openAir.awardPerAreaParticipation})</p>
-        </div>
+
         <Divider horizontal></Divider>
-        <Segment inverted>
+        <Segment inverted color="green">
           <Form inverted onSubmit={this.onSubmit}>
             <Form.Input fluid label='Title' placeholder={this.state.openAir.speechTitle} onChange={(e) => this.setState({speechTitle: e.target.value})}/>
             <Form.TextArea label='Speech' placeholder={this.state.openAir.speechTitle} onChange={(e) => this.setState({speechContent: e.target.value})}/>
-            <Form.Button>
+            <Form.Button color="blue">
               <Icon name='microphone' />
               Submit
             </Form.Button>
@@ -134,14 +142,33 @@ export class OpenAirComponent extends Component {
   }
 
 
-  getPanes(sections) {
-    console.log("sections=" + sections)
-    if (sections) {
-      return sections.map((section) => ({ 
-        menuItem: section, 
-        render: () => <Tab.Pane>{section} Content</Tab.Pane> 
+  getPanes(tabNames, tabType) {
+    //console.log("tabNames=" + tabNames)
+    if (tabNames) {
+      return tabNames.map((tabName) => ({ 
+        menuItem: tabName, 
+        render: () => <Tab.Pane>{this.getPaneContent(tabName, tabType)}</Tab.Pane> 
         }))
     }
+  }
+
+  getPaneContent(tabName, tabType) {
+    var content = tabName + ' Subject Areas'
+    if (tabType === this.TAB_TYPE_AREA) {
+      content = this.areaInteractionSection(tabName)
+    }
+    return content
+  }
+
+  areaInteractionSection(areaName) {
+    //return areaName + ' area'
+    return <div>
+        <Button primary onClick={this.onParticipate}>
+          <Icon name='hand paper'/>
+          Participate
+        </Button> 
+        <p>(Award per area participation: {this.state.openAir.awardPerAreaParticipation})</p>
+      </div>
   }
 
 
