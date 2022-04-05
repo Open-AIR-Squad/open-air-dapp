@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
-import { Tab, Header, Form, Divider } from 'semantic-ui-react'
+import { Header, Form, Divider, Segment } from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -13,7 +13,9 @@ export class OpenAirComponent extends Component {
 
       userAccount: 'invalid',
       userAccountBalance: 0
-    }
+    },
+    speechTitle: "Title",
+    speechContent: "..."
   }
 
   constructor(props) {
@@ -45,11 +47,8 @@ export class OpenAirComponent extends Component {
     const areas = await contract.methods.getAreaNames(fields[0]).call()
     const speeches = await contract.methods.getSpeeches(fields[0], areas[0]).call()
 
-    const tokenContract = await getOpinionTokenInstance(tokenContractAddress)
+    const tokenContract = getOpinionTokenInstance(tokenContractAddress)
     const tokensInCoffer = await tokenContract.methods.balanceOf(address).call()
-
-    //await window.ethereum.enable();
-    //const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
     let userAccount = this.state.openAir.userAccount
     let userAccountBalance = this.state.openAir.userAccountBalance
@@ -98,51 +97,30 @@ export class OpenAirComponent extends Component {
           <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header>          
         </div>
         <Divider horizontal></Divider>
-        <div>
-          <Form inverted>
-            <Form.Input fluid label='Title' placeholder='Title' />
-            <Form.TextArea placeholder='...' />
+        <Segment inverted>
+          <Form inverted onSubmit={this.onSubmit}>
+            <Form.Input fluid label='Title' placeholder={this.state.openAir.speechTitle} onChange={(e) => this.setState({speechTitle: e.target.value})}/>
+            <Form.TextArea label='Speech' placeholder={this.state.openAir.speechTitle} onChange={(e) => this.setState({speechContent: e.target.value})}/>
             <Form.Button>Submit</Form.Button>
           </Form>
-        </div>
+        </Segment>
       </div>
     );
   }
 
-  fieldPanes() {
-    /*
-      return this.state.openAir.fields.map((field) => ({ 
-        menuItem: field, 
-        render: () => <Tab.Pane> {field} Content</Tab.Pane> 
-      }))
-    */
-    const panes = [
-      { menuItem: 'Tab 1', render: () => <Tab.Pane>Tab 1 Content</Tab.Pane> },
-      { menuItem: 'Tab 2', render: () => <Tab.Pane>Tab 2 Content</Tab.Pane> },
-      { menuItem: 'Tab 3', render: () => <Tab.Pane>Tab 3 Content</Tab.Pane> },
-    ]  
-    return panes
-  }
+
 
   async onSubmit(event) {
-    alert("button pressed")
-    /*
-    const accounts = await web3.eth.getAccounts()
-    const amount = web3.utils.toWei(
-      this.state.contributionAmount,
-      'ether'
-    )
-    const contract = createContract(this.getCampaignAddress())
-    await contract.methods.contribute().send({
-      from: accounts[0],
-      value: amount
+    const openAirInstance = getOpenAirInstance(this.state.openAir.address)
+    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentField)
+    const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
+    const tokenContract = getOpinionTokenInstance(this.state.openAir.tokenContractAddress)
+    await tokenContract.methods.approveAndSpeak(this.state.openAir.address, chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.speechTitle, this.state.speechContent).send({from: this.state.openAir.userAccount})
+
+    const openAirState = await this.getOpenAirState(this.state.openAir.address)
+    this.setState({
+      openAir: openAirState
     })
-
-    const campaign = this.state.campaign
-    campaign.totalCollected = Number.parseInt(campaign.totalCollected) +  Number.parseInt(amount)
-
-    this.setState({ campaign: campaign })
-    */
   }
 
 }
