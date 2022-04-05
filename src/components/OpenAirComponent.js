@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
-import { Header, Form, Divider, Segment, Button, Icon, Label } from 'semantic-ui-react'
+import { Header, Form, Divider, Segment, Button, Icon, Label, Tab } from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -84,23 +84,26 @@ export class OpenAirComponent extends Component {
   render() {
     return (
       <div>
-        <Header as='h1'>OPEN AIR</Header>
+        <Header as='h1' color='blue'>OPEN AIR</Header>
         <div className="ui divider"></div>
         <div>
           {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract address:', this.state.openAir.address)}
-          <Header as='h6'>OpenAir contract creator: {this.state.openAir.creator} </Header>
           {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract creator:', this.state.openAir.creator)}
-          <Header as='h6'>OpinionToken contract address: {this.state.openAir.tokenContractAddress}</Header>
-          <Header as='h6'>Tokens in coffer: {this.state.openAir.tokensInCoffer}</Header>
-          <div>
+ 
+          {this.iconLabelsField('blue', 'ethereum', 'OpinionToken contract address: ', this.state.openAir.tokenContractAddress)}
+          
           {this.iconLabelsField('blue','money bill alternate outline', 'Tokens in coffer', this.state.openAir.tokensInCoffer)}
-        </div>
-          <Header as='h6'>User accout: {this.state.openAir.userAccount} </Header>
-          <Header as='h6'>User account balance: {this.state.openAir.userAccountBalance}</Header>  
+         
+          {this.iconLabelsField('green', 'ethereum', 'User accout: ', this.state.openAir.userAccount)}
           {this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.userAccountBalance)}
           <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
           <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
-          <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header>          
+          <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header> 
+          {/*}  
+          <div>
+            <Tab menu={{ pointing: true }} panes={this.getPanes(this.state.openAir.fields)} />
+          </div>   
+          */}    
         </div>
         <div>
           <Button primary onClick={this.onParticipate}>Participate</Button> 
@@ -120,16 +123,29 @@ export class OpenAirComponent extends Component {
     );
   }
 
+
+  getPanes(sections) {
+    return sections.map((section) => ({ 
+      menuItem: section, 
+      render: () => <Tab.Pane>{section} Content</Tab.Pane> 
+      }))
+  }
+
+
+
+
   iconLabelsField(color, icon, label, value) {
-    return <Button as='div' labelPosition='right'>
-    <Label color={color}>
-      <Icon name={icon} />
-      {label}
-    </Label>
-    <Label as='a' basic color={color} pointing='left'>
-      {value}
-    </Label>
-  </Button>
+    return <div>
+      <Button as='div' labelPosition='right'>
+        <Label color={color}>
+          <Icon name={icon} />
+          {label}
+        </Label>
+        <Label as='a' basic color={color} pointing='left'>
+          {value}
+        </Label>
+      </Button>
+    </div>
   }
 
   async onParticipate() {
