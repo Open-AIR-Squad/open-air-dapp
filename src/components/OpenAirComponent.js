@@ -22,9 +22,11 @@ export class OpenAirComponent extends Component {
     const address = await this.getOpenAirAddress()
     const openAirState = await this.getOpenAirState(address)
     this.setState({
-      openAir: openAirState 
+      openAir: openAirState
     })
   }
+
+
 
   async getOpenAirAddress() {
     var contractAddress = this.props.match.params.address    
@@ -41,22 +43,24 @@ export class OpenAirComponent extends Component {
     const speeches = await contract.methods.getSpeeches(fields[0], areas[0]).call()
 
     const tokenContract = await getOpinionTokenInstance(tokenContractAddress)
-    const tokensInCoffer = 0   //tokenContract.balanceOf(address);
+    const tokensInCoffer = await tokenContract.methods.balanceOf(address).call()
 
-    //await window.ethereum.enable();
-    //const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    //const account = accounts[0];
-
+    await window.ethereum.enable();
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const userAccount = accounts[0];
+    const userAccountBalance = await tokenContract.methods.balanceOf(userAccount).call()
     return {
       address: address, 
       creator: creator,
       tokenContractAddress: tokenContractAddress,
-      tkensInCoffer: tokensInCoffer,
+      tokensInCoffer: tokensInCoffer,
       fields: fields,
       currentField: fields[0],
       areas: areas,
       currentArea: areas[0],
-      speeches: speeches
+      speeches: speeches,
+      userAccount: userAccount,
+      userAccountBalance: userAccountBalance
     }
   }
 
@@ -66,10 +70,12 @@ export class OpenAirComponent extends Component {
         <Header as='h1'>OPEN AIR</Header>
         <div className="ui divider"></div>
         <div>
-          <Header as='h6'>OpenAir Contract address: {this.state.openAir.address}</Header>
+          <Header as='h6'>OpenAir contract address: {this.state.openAir.address}</Header>
           <Header as='h6'>OpenAir contract creator: {this.state.openAir.creator} </Header>
-          <Header as='h6'>Opinion Token contract address: {this.state.openAir.tokenContractAddress}</Header>
-          <Header as='h6'>Tokens in Coffer: {this.state.openAir.tokensInCoffer}</Header>
+          <Header as='h6'>OpinionToken contract address: {this.state.openAir.tokenContractAddress}</Header>
+          <Header as='h6'>Tokens in coffer: {this.state.openAir.tokensInCoffer}</Header>
+          <Header as='h6'>User accout: {this.state.openAir.userAccount} </Header>
+          <Header as='h6'>User account balance: {this.state.openAir.userAccountBalance}</Header>            
           <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
           <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
           <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header>          
