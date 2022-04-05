@@ -33,14 +33,14 @@ export class OpenAirComponent extends Component {
 
   async getOpenAirState(address) {
 
-    const contract = getOpenAirInstance(await this.getOpenAirAddress())
+    const contract = getOpenAirInstance(address)
     const creator = await contract.methods.getContractCreator().call()
     const tokenContractAddress = await contract.methods.getTokenContractAddress().call()  
     const fields = await contract.methods.getFieldNames().call()
     const areas = await contract.methods.getAreaNames(fields[0]).call()
     const speeches = await contract.methods.getSpeeches(fields[0], areas[0]).call()
 
-    //const tokenContract = await getOpinionTokenInstance(tokenContractAddress)
+    const tokenContract = await getOpinionTokenInstance(tokenContractAddress)
     const tokensInCoffer = 0   //tokenContract.balanceOf(address);
 
     //await window.ethereum.enable();
