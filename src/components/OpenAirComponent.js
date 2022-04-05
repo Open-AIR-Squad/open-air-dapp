@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { createOpenAirContract } from '../web3/openAirContract'
+import { getOpenAirInstance } from '../web3/openAirContract'
+import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
 import { Tab, Header, Form, Divider } from 'semantic-ui-react'
 
 
@@ -19,9 +20,9 @@ export class OpenAirComponent extends Component {
 
   async componentDidMount() {
     const address = await this.getOpenAirAddress()
-    const openAirInstance = await this.getOpenAir(address)
+    const openAirState = await this.getOpenAirState(address)
     this.setState({
-      openAir: openAirInstance 
+      openAir: openAirState 
     })
   }
 
@@ -30,21 +31,27 @@ export class OpenAirComponent extends Component {
     return contractAddress
   }
 
-  async getOpenAir(address) {
+  async getOpenAirState(address) {
 
-    const contract = createOpenAirContract(await this.getOpenAirAddress())
+    const contract = getOpenAirInstance(await this.getOpenAirAddress())
     const creator = await contract.methods.getContractCreator().call()
     const tokenContractAddress = await contract.methods.getTokenContractAddress().call()  
-    //const tokenContract = await this.getOpinionToken(tokenContractAddress)
-    //cofferBalance = tokenContract.tokenBalance(address)
-    const fields = await contract.methods.getFieldNames().call();
-    const areas = await contract.methods.getAreaNames(fields[0]).call();
-    const speeches = await contract.methods.getSpeeches(fields[0], areas[0]).call();
+    const fields = await contract.methods.getFieldNames().call()
+    const areas = await contract.methods.getAreaNames(fields[0]).call()
+    const speeches = await contract.methods.getSpeeches(fields[0], areas[0]).call()
+
+    //const tokenContract = await getOpinionTokenInstance(tokenContractAddress)
+    const tokensInCoffer = 0   //tokenContract.balanceOf(address);
+
+    //await window.ethereum.enable();
+    //const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    //const account = accounts[0];
 
     return {
       address: address, 
       creator: creator,
       tokenContractAddress: tokenContractAddress,
+      tkensInCoffer: tokensInCoffer,
       fields: fields,
       currentField: fields[0],
       areas: areas,
@@ -59,9 +66,10 @@ export class OpenAirComponent extends Component {
         <Header as='h1'>OPEN AIR</Header>
         <div className="ui divider"></div>
         <div>
-          <Header as='h6'>Contract address: {this.state.openAir.address}</Header>
-          <Header as='h6'>contract creator: {this.state.openAir.creator} </Header>
+          <Header as='h6'>OpenAir Contract address: {this.state.openAir.address}</Header>
+          <Header as='h6'>OpenAir contract creator: {this.state.openAir.creator} </Header>
           <Header as='h6'>Opinion Token contract address: {this.state.openAir.tokenContractAddress}</Header>
+          <Header as='h6'>Tokens in Coffer: {this.state.openAir.tokensInCoffer}</Header>
           <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
           <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
           <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header>          
