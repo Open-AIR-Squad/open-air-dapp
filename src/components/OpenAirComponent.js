@@ -103,7 +103,7 @@ export class OpenAirComponent extends Component {
             a smart contract based autonomous speech platform
           </Header.Subheader>
         </Header>
-r>
+
         <div className="ui divider"></div>
         <div>
           {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract address:', this.state.openAir.address)}
