@@ -87,17 +87,17 @@ export class OpenAirComponent extends Component {
         <Header as='h1'>OPEN AIR</Header>
         <div className="ui divider"></div>
         <div>
-          <Header as='h6'>OpenAir contract address: {this.state.openAir.address}</Header>
-          {this.iconLabelsField('blue', 'OpenAir contract address:', this.state.openAir.address)}
+          {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract address:', this.state.openAir.address)}
           <Header as='h6'>OpenAir contract creator: {this.state.openAir.creator} </Header>
+          {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract creator:', this.state.openAir.creator)}
           <Header as='h6'>OpinionToken contract address: {this.state.openAir.tokenContractAddress}</Header>
           <Header as='h6'>Tokens in coffer: {this.state.openAir.tokensInCoffer}</Header>
           <div>
-          {this.iconLabelsField('blue', 'Tokens in coffer', this.state.openAir.tokensInCoffer)}
+          {this.iconLabelsField('blue','money bill alternate outline', 'Tokens in coffer', this.state.openAir.tokensInCoffer)}
         </div>
           <Header as='h6'>User accout: {this.state.openAir.userAccount} </Header>
           <Header as='h6'>User account balance: {this.state.openAir.userAccountBalance}</Header>  
-          {this.iconLabelsField('green', 'User account balance', this.state.openAir.userAccountBalance)}
+          {this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.userAccountBalance)}
           <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
           <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
           <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header>          
@@ -120,10 +120,10 @@ export class OpenAirComponent extends Component {
     );
   }
 
-  iconLabelsField(color, label, value) {
+  iconLabelsField(color, icon, label, value) {
     return <Button as='div' labelPosition='right'>
     <Label color={color}>
-      <Icon name='money bill alternate outline' />
+      <Icon name={icon} />
       {label}
     </Label>
     <Label as='a' basic color={color} pointing='left'>
