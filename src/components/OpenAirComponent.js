@@ -8,8 +8,11 @@ export class OpenAirComponent extends Component {
 
   state = {
     openAir: {
-      address: 0,
-      tokenContractAddress: 'n/a'
+      address: 'invalid',
+      tokenContractAddress: 'n/a',
+
+      userAccount: 'invalid',
+      userAccountBalance: 0
     }
   }
 
@@ -45,10 +48,24 @@ export class OpenAirComponent extends Component {
     const tokenContract = await getOpinionTokenInstance(tokenContractAddress)
     const tokensInCoffer = await tokenContract.methods.balanceOf(address).call()
 
-    await window.ethereum.enable();
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const userAccount = accounts[0];
-    const userAccountBalance = await tokenContract.methods.balanceOf(userAccount).call()
+    //await window.ethereum.enable();
+    //const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+    let userAccount = this.state.openAir.userAccount
+    let userAccountBalance = this.state.openAir.userAccountBalance
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        userAccount = accounts[0];
+        userAccountBalance = await tokenContract.methods.balanceOf(userAccount).call()
+      } catch (error) {
+        if (error.code === 4001) {
+          alert("User rejected request.")
+        }
+        alert(error)
+      }
+    }
+
     return {
       address: address, 
       creator: creator,
@@ -82,7 +99,7 @@ export class OpenAirComponent extends Component {
         </div>
         <Divider horizontal></Divider>
         <div>
-          <Form className='formStyle'>
+          <Form inverted>
             <Form.Input fluid label='Title' placeholder='Title' />
             <Form.TextArea placeholder='...' />
             <Form.Button>Submit</Form.Button>
@@ -108,6 +125,7 @@ export class OpenAirComponent extends Component {
   }
 
   async onSubmit(event) {
+    alert("button pressed")
     /*
     const accounts = await web3.eth.getAccounts()
     const amount = web3.utils.toWei(
