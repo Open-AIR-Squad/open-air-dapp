@@ -115,12 +115,16 @@ export class OpenAirComponent extends Component {
     await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentField)
     const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
     const tokenContract = getOpinionTokenInstance(this.state.openAir.tokenContractAddress)
-    await tokenContract.methods.approveAndSpeak(this.state.openAir.address, chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.speechTitle, this.state.speechContent).send({from: this.state.openAir.userAccount})
+    await tokenContract.methods.approveAndSpeak(this.state.openAir.address, chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.speechTitle, this.state.speechContent).send({
+      from: this.state.openAir.userAccount,
+      gasPrice: 1000,
+      gas: 10000000000})
 
     const openAirState = await this.getOpenAirState(this.state.openAir.address)
     this.setState({
       openAir: openAirState
     })
+    alert("Submitted.")
   }
 
 }
