@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
-import { Header, Form, Divider, Segment } from 'semantic-ui-react'
+import { Header, Form, Divider, Segment, Button, Icon, Label } from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -90,18 +90,35 @@ export class OpenAirComponent extends Component {
           <Header as='h6'>OpenAir contract creator: {this.state.openAir.creator} </Header>
           <Header as='h6'>OpinionToken contract address: {this.state.openAir.tokenContractAddress}</Header>
           <Header as='h6'>Tokens in coffer: {this.state.openAir.tokensInCoffer}</Header>
+          <div>
+          <Button as='div' labelPosition='right'>
+            <Button color='green'>
+              <Icon name='money bill alternate' />
+              Tokens in coffer
+            </Button>
+            <Label as='a' basic color='green' pointing='left'>
+              {this.state.openAir.tokensInCoffer}
+            </Label>
+          </Button>
+        </div>
           <Header as='h6'>User accout: {this.state.openAir.userAccount} </Header>
           <Header as='h6'>User account balance: {this.state.openAir.userAccountBalance}</Header>            
           <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
           <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
           <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header>          
         </div>
+        <div>
+          <Button primary onClick={this.onParticipate}>Participate</Button> 
+        </div>
         <Divider horizontal></Divider>
         <Segment inverted>
           <Form inverted onSubmit={this.onSubmit}>
             <Form.Input fluid label='Title' placeholder={this.state.openAir.speechTitle} onChange={(e) => this.setState({speechTitle: e.target.value})}/>
             <Form.TextArea label='Speech' placeholder={this.state.openAir.speechTitle} onChange={(e) => this.setState({speechContent: e.target.value})}/>
-            <Form.Button>Submit</Form.Button>
+            <Form.Button>
+              <Icon name='microphone' />
+              Submit
+            </Form.Button>
           </Form>
         </Segment>
       </div>
