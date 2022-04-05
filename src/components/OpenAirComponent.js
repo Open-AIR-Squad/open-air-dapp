@@ -47,6 +47,10 @@ export class OpenAirComponent extends Component {
     const fields = await contract.methods.getFieldNames().call()
     const areas = await contract.methods.getAreaNames(fields[0]).call()
     const speeches = await contract.methods.getSpeeches(fields[0], areas[0]).call()
+    const chargePerSpeech = await contract.methods.getChargePerSpeech().call()
+    const awardPerAreaParticipation = await contract.methods.getAwardForParticipation().call()
+    const awardToVoterPerFollower = await contract.methods.getAwardToVoterPerFollower().call()
+    const awardToSpeakerPerUpVote = await contract.methods.getAwardToSpeakerPerUpVote().call()
 
     const tokenContract = getOpinionTokenInstance(tokenContractAddress)
     const tokensInCoffer = await tokenContract.methods.balanceOf(address).call()
@@ -77,7 +81,11 @@ export class OpenAirComponent extends Component {
       currentArea: areas[0],
       speeches: speeches,
       userAccount: userAccount,
-      userAccountBalance: userAccountBalance
+      userAccountBalance: userAccountBalance,
+      chargePerSpeech: chargePerSpeech,
+      awardPerAreaParticipation: awardPerAreaParticipation,
+      awardToVoterPerFollower: awardToVoterPerFollower,
+      awardToSpeakerPerUpVote: awardToSpeakerPerUpVote
     }
   }
 
@@ -99,14 +107,15 @@ export class OpenAirComponent extends Component {
           <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
           <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
           <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header> 
-          {/*}  
+          
           <div>
             <Tab menu={{ pointing: true }} panes={this.getPanes(this.state.openAir.fields)} />
-          </div>   
-          */}    
+            <Tab menu={{ fluid: true, vertical: true, tabular: true }} panes={this.getPanes(this.state.openAir.areas)} />
+          </div>              
         </div>
         <div>
           <Button primary onClick={this.onParticipate}>Participate</Button> 
+          <p>(Award per area participation: {this.state.openAir.awardPerAreaParticipation})</p>
         </div>
         <Divider horizontal></Divider>
         <Segment inverted>
@@ -117,6 +126,7 @@ export class OpenAirComponent extends Component {
               <Icon name='microphone' />
               Submit
             </Form.Button>
+            <p>(Charge per speech: {this.state.openAir.chargePerSpeech})</p>
           </Form>
         </Segment>
       </div>
@@ -125,10 +135,13 @@ export class OpenAirComponent extends Component {
 
 
   getPanes(sections) {
-    return sections.map((section) => ({ 
-      menuItem: section, 
-      render: () => <Tab.Pane>{section} Content</Tab.Pane> 
-      }))
+    console.log("sections=" + sections)
+    if (sections) {
+      return sections.map((section) => ({ 
+        menuItem: section, 
+        render: () => <Tab.Pane>{section} Content</Tab.Pane> 
+        }))
+    }
   }
 
 
