@@ -64,7 +64,7 @@ export class OpenAirComponent extends Component {
           <Header as='h6'>Opinion Token contract address: {this.state.openAir.tokenContractAddress}</Header>
         </div>
         <div>
-          <Form>
+          <Form className='formStyle'>
             <Form.Input fluid label='Title' placeholder='Title' />
             <Form.TextArea placeholder='...' />
             <Form.Button>Submit</Form.Button>
