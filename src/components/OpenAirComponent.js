@@ -21,6 +21,7 @@ export class OpenAirComponent extends Component {
   constructor(props) {
     super(props)
     this.onSubmit = this.onSubmit.bind(this)
+    this.onParticipate = this.onParticipate.bind(this)
   }
 
   async componentDidMount() {
@@ -87,22 +88,16 @@ export class OpenAirComponent extends Component {
         <div className="ui divider"></div>
         <div>
           <Header as='h6'>OpenAir contract address: {this.state.openAir.address}</Header>
+          {this.iconLabelsField('blue', 'OpenAir contract address:', this.state.openAir.address)}
           <Header as='h6'>OpenAir contract creator: {this.state.openAir.creator} </Header>
           <Header as='h6'>OpinionToken contract address: {this.state.openAir.tokenContractAddress}</Header>
           <Header as='h6'>Tokens in coffer: {this.state.openAir.tokensInCoffer}</Header>
           <div>
-          <Button as='div' labelPosition='right'>
-            <Button color='green'>
-              <Icon name='money bill alternate' />
-              Tokens in coffer
-            </Button>
-            <Label as='a' basic color='green' pointing='left'>
-              {this.state.openAir.tokensInCoffer}
-            </Label>
-          </Button>
+          {this.iconLabelsField('blue', 'Tokens in coffer', this.state.openAir.tokensInCoffer)}
         </div>
           <Header as='h6'>User accout: {this.state.openAir.userAccount} </Header>
-          <Header as='h6'>User account balance: {this.state.openAir.userAccountBalance}</Header>            
+          <Header as='h6'>User account balance: {this.state.openAir.userAccountBalance}</Header>  
+          {this.iconLabelsField('green', 'User account balance', this.state.openAir.userAccountBalance)}
           <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
           <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
           <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header>          
@@ -125,11 +120,33 @@ export class OpenAirComponent extends Component {
     );
   }
 
+  iconLabelsField(color, label, value) {
+    return <Button as='div' labelPosition='right'>
+    <Label color={color}>
+      <Icon name='money bill alternate outline' />
+      {label}
+    </Label>
+    <Label as='a' basic color={color} pointing='left'>
+      {value}
+    </Label>
+  </Button>
+  }
 
+  async onParticipate() {
+    const openAirInstance = getOpenAirInstance(this.state.openAir.address)
+    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: this.state.openAir.userAccount})
+    
+    //refresh state
+    const openAirState = await this.getOpenAirState(this.state.openAir.address)
+    this.setState({
+      openAir: openAirState
+    })
+    alert("Participated.")
+  }
 
   async onSubmit(event) {
     const openAirInstance = getOpenAirInstance(this.state.openAir.address)
-    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentField)
+    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: this.state.openAir.userAccount})
     const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
     const tokenContract = getOpinionTokenInstance(this.state.openAir.tokenContractAddress)
     await tokenContract.methods.approveAndSpeak(this.state.openAir.address, chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.speechTitle, this.state.speechContent).send({
