@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { createOpenAirContract } from '../web3/openAirContract'
-import { Tab, Header, Form } from 'semantic-ui-react'
+import { Tab, Header, Form, Divider } from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -14,13 +14,14 @@ export class OpenAirComponent extends Component {
 
   constructor(props) {
     super(props)
+    this.onSubmit = this.onSubmit.bind(this)
   }
 
   async componentDidMount() {
     const address = await this.getOpenAirAddress()
-    const currentOpenAir = await this.getOpenAir(address)
+    const openAirInstance = await this.getOpenAir(address)
     this.setState({
-      openAir: currentOpenAir
+      openAir: openAirInstance 
     })
   }
 
@@ -32,24 +33,23 @@ export class OpenAirComponent extends Component {
   async getOpenAir(address) {
 
     const contract = createOpenAirContract(await this.getOpenAirAddress())
-
-    var tokenContractAddress = 0
-    var fields
-    var creator 
-    try {
-      tokenContractAddress = await contract.methods.getTokenContractAddress().call()  
-      fields = await contract.methods.getFieldNames().call()
-      creator = await contract.methods.getContractCreator().call()
-    } catch (err) {
-      console.log(err)
-    }
+    const creator = await contract.methods.getContractCreator().call()
+    const tokenContractAddress = await contract.methods.getTokenContractAddress().call()  
+    //const tokenContract = await this.getOpinionToken(tokenContractAddress)
+    //cofferBalance = tokenContract.tokenBalance(address)
+    const fields = await contract.methods.getFieldNames().call();
+    const areas = await contract.methods.getAreaNames(fields[0]).call();
+    const speeches = await contract.methods.getSpeeches(fields[0], areas[0]).call();
 
     return {
-      address: address,   
+      address: address, 
       creator: creator,
       tokenContractAddress: tokenContractAddress,
       fields: fields,
       currentField: fields[0],
+      areas: areas,
+      currentArea: areas[0],
+      speeches: speeches
     }
   }
 
@@ -62,7 +62,11 @@ export class OpenAirComponent extends Component {
           <Header as='h6'>Contract address: {this.state.openAir.address}</Header>
           <Header as='h6'>contract creator: {this.state.openAir.creator} </Header>
           <Header as='h6'>Opinion Token contract address: {this.state.openAir.tokenContractAddress}</Header>
+          <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
+          <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
+          <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header>          
         </div>
+        <Divider horizontal></Divider>
         <div>
           <Form className='formStyle'>
             <Form.Input fluid label='Title' placeholder='Title' />
@@ -89,6 +93,24 @@ export class OpenAirComponent extends Component {
     return panes
   }
 
+  async onSubmit(event) {
+    /*
+    const accounts = await web3.eth.getAccounts()
+    const amount = web3.utils.toWei(
+      this.state.contributionAmount,
+      'ether'
+    )
+    const contract = createContract(this.getCampaignAddress())
+    await contract.methods.contribute().send({
+      from: accounts[0],
+      value: amount
+    })
 
+    const campaign = this.state.campaign
+    campaign.totalCollected = Number.parseInt(campaign.totalCollected) +  Number.parseInt(amount)
+
+    this.setState({ campaign: campaign })
+    */
+  }
 
 }
