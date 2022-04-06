@@ -111,6 +111,9 @@ contract OpenAir is ApprovalCallBack {
     function getArea(string memory fieldName, string memory areaName) internal view returns (Area storage) {
         return nameFieldMapping[fieldName].nameAreaMapping[areaName];
     }
+    function getAreaSpeechCount(string memory fieldName, string memory areaName) public view returns (uint) {
+        return getArea(fieldName, areaName).speeches.length;
+    }    
     function getSpeeches(string memory fieldName, string memory areaName) public view returns (Speech [] memory) {
         return getArea(fieldName, areaName).speeches;
     }    
@@ -118,7 +121,10 @@ contract OpenAir is ApprovalCallBack {
         return nameFieldMapping[fieldName].nameAreaMapping[areaName].speeches[speechIndex];
     }    
 	
-	
+	function getSpeechAddress(string memory fieldName, string memory areaName, uint speechIndex) public view returns (address) {
+        return address(getSpeech(fieldName, areaName, speechIndex));
+    }   
+
 	function setModerator(address candidate) public onlyBy(creator) {
         moderator = candidate;
     }

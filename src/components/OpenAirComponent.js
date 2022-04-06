@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
+import { getSpeechInstance } from '../web3/speechContract'
 import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table } from 'semantic-ui-react'
 
 
@@ -16,12 +17,12 @@ export class OpenAirComponent extends Component {
       tokenContractAddress: 'n/a',
 
       userAccount: 'invalid',
-      userAccountBalance: 0,
-      activeSpeechRowIndex : 0
+      userAccountBalance: 0
     },
     
     speechTitle: "Title",
-    speechContent: "..."
+    speechContent: "...",
+    activeSpeechRowIndex: 0
   }
 
   constructor(props) {
@@ -46,13 +47,7 @@ export class OpenAirComponent extends Component {
   }
 
 
-  async getSpeechRows(speeches) {
-    const rows = []
-    for (var i = 0; i < speeches.length; i ++) {
-      rows[i] = {index: i, title: (await speeches[i].methods.getTitle().call())}
-    }
-    return rows
-  }
+
 
   async getOpenAirState(address) {
 
@@ -66,8 +61,13 @@ export class OpenAirComponent extends Component {
     const awardPerAreaParticipation = await contract.methods.getAwardForParticipation().call()
     const awardToVoterPerFollower = await contract.methods.getAwardToVoterPerFollower().call()
     const awardToSpeakerPerUpVote = await contract.methods.getAwardToSpeakerPerUpVote().call()
-    const speechRows = await this.getSpeechRows(speeches)
-    
+    //const speechRows = await this.getSpeechRows(speeches)
+    const rows = []
+    for (var i = 0; i < speeches.length; i ++) {
+      const speechInstance = getSpeechInstance(await contract.methods.getSpeechAddress(fields[0], areas[0], i).call())
+      rows[i] = {index: i, title: (await speechInstance.methods.getTitle().call())}
+    }
+      
 
     const tokenContract = getOpinionTokenInstance(tokenContractAddress)
     const tokensInCoffer = await tokenContract.methods.balanceOf(address).call()
@@ -103,7 +103,7 @@ export class OpenAirComponent extends Component {
       awardPerAreaParticipation: awardPerAreaParticipation,
       awardToVoterPerFollower: awardToVoterPerFollower,
       awardToSpeakerPerUpVote: awardToSpeakerPerUpVote,
-      speechRows : speechRows
+      speechRows : rows
     }
   }
 
@@ -118,14 +118,6 @@ export class OpenAirComponent extends Component {
           </Header.Subheader>
         </Header>
 
-        <Header as='h1' color="blue">
-          <Icon name='skyatlas' />
-          <Header.Content>
-            Open Air
-            <Header.Subheader color="blue">a smart contract based autonomous speech platform</Header.Subheader>
-          </Header.Content>
-        </Header>
-
         <div className="ui divider"></div>
         <div>
           {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract address:', this.state.openAir.address)}
@@ -137,9 +129,7 @@ export class OpenAirComponent extends Component {
          
           {this.iconLabelsField('green', 'ethereum', 'User accout: ', this.state.openAir.userAccount)}
           {this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.userAccountBalance)}
-          <Header as='h6'>Fields: {this.state.openAir.fields}</Header>
-          <Header as='h6'>Areas: {this.state.openAir.areas} </Header>
-          <Header as='h6'>Speeches: {this.state.openAir.speeches}</Header> 
+
           
           <div>
             <Tab menu={{ pointing: true }} panes={this.getPanes(this.state.openAir.fields, this.TAB_TYPE_FIELD)} />
@@ -196,6 +186,8 @@ export class OpenAirComponent extends Component {
               <Table.Row>
                 <Table.HeaderCell>Index</Table.HeaderCell>
                 <Table.HeaderCell>Title</Table.HeaderCell>
+                <Table.HeaderCell></Table.HeaderCell>
+                <Table.HeaderCell></Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>{this.renderSpeechRows()}</Table.Body>
@@ -210,13 +202,15 @@ export class OpenAirComponent extends Component {
       return (
         <Table.Row
           key={item.index}
-          active={item.index === this.state.activeSpeechRowId}
+          active={item.index === this.state.activeSpeechRowIndex}
           onClick={() => {
             this.setActiveRow(item.index);
           }}
         >
           <Table.Cell title={item.index}>{item.index}</Table.Cell>
           <Table.Cell title={item.title}>{item.title}</Table.Cell>
+          <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs up', '', 0)}  </Table.Cell>
+          <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs down', '', 0)} </Table.Cell>
         </Table.Row>
       );
     });
