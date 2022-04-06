@@ -16,8 +16,10 @@ export class OpenAirComponent extends Component {
       tokenContractAddress: 'n/a',
 
       userAccount: 'invalid',
-      userAccountBalance: 0
+      userAccountBalance: 0,
+      activeSpeechRowIndex : 0
     },
+    
     speechTitle: "Title",
     speechContent: "..."
   }
@@ -43,6 +45,15 @@ export class OpenAirComponent extends Component {
     return contractAddress
   }
 
+
+  async getSpeechRows(speeches) {
+    const rows = []
+    for (var i = 0; i < speeches.length; i ++) {
+      rows[i] = {index: i, title: (await speeches[i].methods.getTitle().call())}
+    }
+    return rows
+  }
+
   async getOpenAirState(address) {
 
     const contract = getOpenAirInstance(address)
@@ -55,6 +66,8 @@ export class OpenAirComponent extends Component {
     const awardPerAreaParticipation = await contract.methods.getAwardForParticipation().call()
     const awardToVoterPerFollower = await contract.methods.getAwardToVoterPerFollower().call()
     const awardToSpeakerPerUpVote = await contract.methods.getAwardToSpeakerPerUpVote().call()
+    const speechRows = await this.getSpeechRows(speeches)
+    
 
     const tokenContract = getOpinionTokenInstance(tokenContractAddress)
     const tokensInCoffer = await tokenContract.methods.balanceOf(address).call()
@@ -89,17 +102,9 @@ export class OpenAirComponent extends Component {
       chargePerSpeech: chargePerSpeech,
       awardPerAreaParticipation: awardPerAreaParticipation,
       awardToVoterPerFollower: awardToVoterPerFollower,
-      awardToSpeakerPerUpVote: awardToSpeakerPerUpVote
+      awardToSpeakerPerUpVote: awardToSpeakerPerUpVote,
+      speechRows : speechRows
     }
-  }
-
-
-  getSpeechRows(speeches) {
-    const rows = []
-    for (var i = 0; i < speeches.length; i ++) {
-      rows[i] = {index: i, title: speeches[i].title}
-    }
-    return rows
   }
 
   render() {
@@ -199,12 +204,13 @@ export class OpenAirComponent extends Component {
       </div>
   }
 
+
   renderSpeechRows() {
-    let rows = this.getSpeechRows(this.state.openAir.speeches).map(item => {
+    let rows = this.state.openAir.speechRows.map(item => {
       return (
         <Table.Row
           key={item.index}
-          active={item.index === this.state.activeRowId}
+          active={item.index === this.state.activeSpeechRowId}
           onClick={() => {
             this.setActiveRow(item.index);
           }}
@@ -218,6 +224,11 @@ export class OpenAirComponent extends Component {
     return rows;
   }
 
+  setActiveRow(index) {
+    this.setState({
+      activeSpeechRowIndex: index
+    });
+  }
 
 
   iconLabelsField(color, icon, label, value) {
