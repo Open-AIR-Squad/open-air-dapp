@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
-import { Header, Form, Divider, Segment, Button, Icon, Label, Tab } from 'semantic-ui-react'
+import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table } from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -93,15 +93,32 @@ export class OpenAirComponent extends Component {
     }
   }
 
+
+  getSpeechRows(speeches) {
+    const rows = []
+    for (var i = 0; i < speeches.length; i ++) {
+      rows[i] = {index: i, title: speeches[i].title}
+    }
+    return rows
+  }
+
   render() {
     return (
       <div>
         <Header as='h1' icon color="blue">
           <Icon name='skyatlas' />
-          Open Air
+            Open Air
           <Header.Subheader color="blue">
             a smart contract based autonomous speech platform
           </Header.Subheader>
+        </Header>
+
+        <Header as='h1' color="blue">
+          <Icon name='skyatlas' />
+          <Header.Content>
+            Open Air
+            <Header.Subheader color="blue">a smart contract based autonomous speech platform</Header.Subheader>
+          </Header.Content>
         </Header>
 
         <div className="ui divider"></div>
@@ -168,9 +185,38 @@ export class OpenAirComponent extends Component {
           Participate
         </Button> 
         <p>(Award per area participation: {this.state.openAir.awardPerAreaParticipation})</p>
+        <div>
+          <Table celled fixed singleLine compact size="small" selectable>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Index</Table.HeaderCell>
+                <Table.HeaderCell>Title</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>{this.renderSpeechRows()}</Table.Body>
+          </Table>
+        </div>
       </div>
   }
 
+  renderSpeechRows() {
+    let rows = this.getSpeechRows(this.state.openAir.speeches).map(item => {
+      return (
+        <Table.Row
+          key={item.index}
+          active={item.index === this.state.activeRowId}
+          onClick={() => {
+            this.setActiveRow(item.index);
+          }}
+        >
+          <Table.Cell title={item.index}>{item.index}</Table.Cell>
+          <Table.Cell title={item.title}>{item.title}</Table.Cell>
+        </Table.Row>
+      );
+    });
+
+    return rows;
+  }
 
 
 
