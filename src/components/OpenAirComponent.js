@@ -110,7 +110,7 @@ export class OpenAirComponent extends Component {
   render() {
     return (
       <div>
-        <Header as='h1' icon color="blue">
+        <Header icon color="blue" size='huge'>
           <Icon name='skyatlas' />
             Open Air
           <Header.Subheader color="blue">
@@ -209,8 +209,8 @@ export class OpenAirComponent extends Component {
         >
           <Table.Cell title={item.index}>{item.index}</Table.Cell>
           <Table.Cell title={item.title}>{item.title}</Table.Cell>
-          <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs up', '', 0)}  </Table.Cell>
-          <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs down', '', 0)} </Table.Cell>
+          <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs up', '', 0)}  </Table.Cell>
+          <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs down', '', 0)} </Table.Cell>
         </Table.Row>
       );
     });
