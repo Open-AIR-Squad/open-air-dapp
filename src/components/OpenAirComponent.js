@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
 import { getSpeechInstance } from '../web3/speechContract'
-import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table, Dropdown} from 'semantic-ui-react'
+import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table} from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -30,7 +30,7 @@ export class OpenAirComponent extends Component {
       currentUserAccountBalance: 0
     },
     
-    isSpeaking: this.WORKSPACE_MODE_NONE,
+    workspaceMode: this.WORKSPACE_MODE_NONE,
     newSpeechTitle: "Title",
     newSpeechContent: "..."
   }
@@ -209,7 +209,7 @@ export class OpenAirComponent extends Component {
         </div>
 
         <Divider horizontal></Divider>
-        {this.workspaceUI(this.state.isSpeaking)}
+        {this.workspaceUI()}
 
       </div>
     );
@@ -252,8 +252,10 @@ export class OpenAirComponent extends Component {
     alert("Participated.")
   }
 
-  workspaceUI(mode) {
-    if (mode === this.WORKSPACE_MODE_SPEAKING) {
+  workspaceUI() {
+    
+    if (this.state.workspaceMode === this.WORKSPACE_MODE_SPEAKING) {
+      //alert('in speaking mode.'); 
       return  <Segment inverted color="green">
         <Form inverted onSubmit={this.onSubmitSpeech}>
           <Form.Input fluid label='Title' placeholder={this.state.newSpeechTitle} onChange={(e) => this.setState({newSpeechTitle: e.target.value})}/>
@@ -265,7 +267,7 @@ export class OpenAirComponent extends Component {
           <p>(Charge per speech: {this.state.openAir.chargePerSpeech})</p>
         </Form>
       </Segment>
-    } else if (mode === this.WORKSPACE_MODE_VOTING) {
+    } else if (this.state.workspaceMode === this.WORKSPACE_MODE_VOTING) {
       return  <Segment inverted color="grey">
         <Form inverted onSubmit={this.onSubmit}>
         <Form.Input fluid label='Title' placeholder={this.state.openAir.selectedSpeechTitle}/>
@@ -277,8 +279,8 @@ export class OpenAirComponent extends Component {
           <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
         </Form>
       </Segment>      
-    } else {   //mode == this.WORKSPACE_MODE_NONE
-      return <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({isSpeaking : true})}}>
+    } else {   //this.WORKSPACE_MODE_NONE
+      return <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_SPEAKING})}}>
         <Label color='green'>
           <Icon name='bullhorn' />
           Speak
@@ -292,18 +294,15 @@ export class OpenAirComponent extends Component {
     const currentUserAccount = this.state.openAir.currentUserAccount
     const openAirInstance = getOpenAirInstance(this.state.openAir.address)
     await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: currentUserAccount})
-    const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
+    //const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
     const tokenContract = getOpinionTokenInstance(this.state.openAir.tokenContractAddress)
-    await tokenContract.methods.approveAndSpeak(this.state.openAir.address, chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.speechTitle, this.state.speechContent).send({
-      from: currentUserAccount,
-      gasPrice: 1000,
-      gas: 10000000000})
+    await tokenContract.methods.approveAndSpeak(this.state.openAir.address, this.state.openAir.chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.newSpeechTitle, this.state.newSpeechContent).send({
+      from: currentUserAccount})
 
     const openAirState = await this.getOpenAirState(this.state.openAir.address)
     this.setState({
       openAir: openAirState,
-      isSpeaking: this.WORKSPACE_MODE_NONE
-
+      workspaceMode: this.WORKSPACE_MODE_NONE
     })
     alert("Submitted.")
   }
