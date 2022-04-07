@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
 import { getSpeechInstance } from '../web3/speechContract'
-import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table, Select, Input, Dropdown} from 'semantic-ui-react'
+import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table, Dropdown} from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -21,9 +21,12 @@ export class OpenAirComponent extends Component {
       address: 'invalid',
       tokenContractAddress: 'n/a',
 
-      userAccount: 'invalid',
       userAccountBalance: 0,
-      selectedSpeechIndex: 0
+      selectedSpeechIndex: 0,
+
+      userAccounts: [],
+      currentUserAccountIndex: 0,
+      currentUserAccountBalance: 0
     },
     
     isSpeaking: this.WORKSPACE_MODE_NONE,
@@ -79,13 +82,15 @@ export class OpenAirComponent extends Component {
     const tokenContract = getOpinionTokenInstance(tokenContractAddress)
     const tokensInCoffer = await tokenContract.methods.balanceOf(address).call()
 
-    let userAccount = this.state.openAir.userAccount
-    let userAccountBalance = this.state.openAir.userAccountBalance
+    let userAccounts = this.state.openAir.userAccounts
+    let currentUserAccountBalance = this.state.openAir.currentUserAccountBalance
     if (window.ethereum) {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        userAccount = accounts[0];
-        userAccountBalance = await tokenContract.methods.balanceOf(userAccount).call()
+        
+        userAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+        console.log(userAccounts[0])
+        currentUserAccountBalance = await tokenContract.methods.balanceOf(userAccounts[this.state.currentUserAccountIndex]).call()
+    
       } catch (error) {
         if (error.code === 4001) {
           alert("User rejected request.")
@@ -104,14 +109,15 @@ export class OpenAirComponent extends Component {
       areas: areas,
       currentArea: areas[0],
       speeches: speeches,
-      userAccount: userAccount,
-      userAccountBalance: userAccountBalance,
       chargePerSpeech: chargePerSpeech,
       chargePerVote: chargePerVote,
       awardPerAreaParticipation: awardPerAreaParticipation,
       awardToVoterPerFollower: awardToVoterPerFollower,
       awardToSpeakerPerUpVote: awardToSpeakerPerUpVote,
-      speechRows : rows
+      speechRows : rows,
+      userAccounts: userAccounts,
+      currentUserAccount: userAccounts[this.state.openAir.currentUserAccountIndex],
+      currentUserAccountBalance: currentUserAccountBalance      
     }
   }
 
@@ -167,12 +173,7 @@ export class OpenAirComponent extends Component {
                   </Header>
                 </Table.Cell>
                 <Table.Cell color='green'>
-                  <Dropdown
-                    className="ui primary"
-                    onChange={this.handleDropDownSelect}         
-                    options={[{ key: 'af', value: 'af', text: 'Afghanistan' }, { key: 'ax', value: 'ax', text: 'Aland Islands' }]}
-                    defaultValue='af'
-                  /> 
+                  {this.accountsDropDown()}
                 </Table.Cell>
               </Table.Row>  
               <Table.Row>
@@ -192,8 +193,8 @@ export class OpenAirComponent extends Component {
           </Segment>
 
 
-          {this.iconLabelsField('green', 'ethereum', 'User accout: ', this.state.openAir.userAccount)}
-          {this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.userAccountBalance)}
+          {this.iconLabelsField('green', 'ethereum', 'User accout: ', this.state.openAir.currentUserAccount)}
+          {this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.currentUserAccountBalance)}
           <Divider horizontal></Divider>
 
           
@@ -210,9 +211,30 @@ export class OpenAirComponent extends Component {
     );
   }
 
+  accountsDropDown() {
+    return <Dropdown
+        className="ui primary"
+        onChange={this.handleDropDownSelect}         
+        options={this.getAccountsDropDownOptions()}
+        defaultValue='0'
+      /> 
+  }
+
+  getAccountsDropDownOptions() {
+    var options = []
+    const accounts = this.state.openAir.userAccounts
+    for (var i = 0; i < accounts.length; i ++) {
+      const item = { key: i, value: i, text : accounts[i] }
+      options.push(item);
+    }
+    //options = [{ key: 'af', value: 'af', text: 'Afghanistan' }, { key: 'ax', value: 'ax', text: 'Aland Islands' }]
+    return options
+  }
+
   async onParticipate() {
+    const currentUserAccount = this.state.openAir.userAccounts[this.state.openAir.currentUserAccountIndex]
     const openAirInstance = getOpenAirInstance(this.state.openAir.address)
-    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: this.state.openAir.userAccount})
+    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: currentUserAccount})
     
     //refresh state
     const openAirState = await this.getOpenAirState(this.state.openAir.address)
@@ -259,12 +281,13 @@ export class OpenAirComponent extends Component {
   }
 
   async onSubmitSpeech(event) {
+    const currentUserAccount = this.state.openAir.userAccounts[this.state.openAir.currentUserAccountIndex]
     const openAirInstance = getOpenAirInstance(this.state.openAir.address)
-    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: this.state.openAir.userAccount})
+    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: currentUserAccount})
     const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
     const tokenContract = getOpinionTokenInstance(this.state.openAir.tokenContractAddress)
     await tokenContract.methods.approveAndSpeak(this.state.openAir.address, chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.speechTitle, this.state.speechContent).send({
-      from: this.state.openAir.userAccount,
+      from: currentUserAccount,
       gasPrice: 1000,
       gas: 10000000000})
 
