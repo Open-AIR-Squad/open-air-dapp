@@ -281,7 +281,7 @@ export class OpenAirComponent extends Component {
         </Form>
       </Segment>
     } else if (this.state.workspaceMode === this.WORKSPACE_MODE_VOTING) {
-      const { value } = this.state.votingChoice
+      const value = this.state.votingChoice
       return  <Segment inverted color="grey">
         <Form inverted onSubmit={this.onSubmitVote}>
           <Form.Input fluid label='Index' placeholder={this.state.selectedSpeechIndex}/>
@@ -316,7 +316,7 @@ export class OpenAirComponent extends Component {
             />
           </Form.Group>
           <Form.TextArea label='Optional comment:' placeholder=' ...' />
-          <Form.Button>Done</Form.Button>
+          <Form.Button onClick={()=>{this.setState({ workspaceMode: this.WORKSPACE_MODE_NONE})}}>Done</Form.Button>
         </Form>
       </Segment>      
     } else {   //this.WORKSPACE_MODE_NONE
