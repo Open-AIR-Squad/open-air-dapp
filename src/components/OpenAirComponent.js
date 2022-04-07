@@ -24,8 +24,9 @@ export class OpenAirComponent extends Component {
       userAccountBalance: 0,
       selectedSpeechIndex: 0,
 
-      userAccounts: [],
-      currentUserAccountIndex: 0,
+      //userAccounts: [],
+      //currentUserAccountIndex: 0,
+      //currentUserAccount: 0,
       currentUserAccountBalance: 0
     },
     
@@ -82,14 +83,16 @@ export class OpenAirComponent extends Component {
     const tokenContract = getOpinionTokenInstance(tokenContractAddress)
     const tokensInCoffer = await tokenContract.methods.balanceOf(address).call()
 
-    let userAccounts = this.state.openAir.userAccounts
+    //let userAccounts = this.state.openAir.userAccounts
+    let currentUserAccount = this.state.openAir.currentUserAccount
     let currentUserAccountBalance = this.state.openAir.currentUserAccountBalance
     if (window.ethereum) {
       try {
         
-        userAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-        console.log(userAccounts[0])
-        currentUserAccountBalance = await tokenContract.methods.balanceOf(userAccounts[this.state.currentUserAccountIndex]).call()
+        const userAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+        console.log('userAccounts.length=' + userAccounts.length)
+        currentUserAccount = userAccounts[0]
+        currentUserAccountBalance = await tokenContract.methods.balanceOf(currentUserAccount).call()
     
       } catch (error) {
         if (error.code === 4001) {
@@ -115,8 +118,8 @@ export class OpenAirComponent extends Component {
       awardToVoterPerFollower: awardToVoterPerFollower,
       awardToSpeakerPerUpVote: awardToSpeakerPerUpVote,
       speechRows : rows,
-      userAccounts: userAccounts,
-      currentUserAccount: userAccounts[this.state.openAir.currentUserAccountIndex],
+      //userAccounts: userAccounts,
+      currentUserAccount: currentUserAccount,
       currentUserAccountBalance: currentUserAccountBalance      
     }
   }
@@ -173,7 +176,8 @@ export class OpenAirComponent extends Component {
                   </Header>
                 </Table.Cell>
                 <Table.Cell color='green'>
-                  {this.accountsDropDown()}
+                  {/*this.accountsDropDown()*/}
+                  {this.state.openAir.currentUserAccount}
                 </Table.Cell>
               </Table.Row>  
               <Table.Row>
@@ -186,15 +190,15 @@ export class OpenAirComponent extends Component {
                   </Header>
                 </Table.Cell>
                 <Table.Cell color='green'>
-                  {this.state.openAir.userAccountBalance}
+                  {this.state.openAir.currentUserAccountBalance}
                 </Table.Cell>
               </Table.Row>      
             </Table>
           </Segment>
 
 
-          {this.iconLabelsField('green', 'ethereum', 'User accout: ', this.state.openAir.currentUserAccount)}
-          {this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.currentUserAccountBalance)}
+          {/*this.iconLabelsField('green', 'ethereum', 'User accout: ', this.state.openAir.currentUserAccount)*/}
+          {/*this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.currentUserAccountBalance)*/}
           <Divider horizontal></Divider>
 
           
@@ -211,6 +215,7 @@ export class OpenAirComponent extends Component {
     );
   }
 
+  /*
   accountsDropDown() {
     return <Dropdown
         className="ui primary"
@@ -219,7 +224,9 @@ export class OpenAirComponent extends Component {
         defaultValue='0'
       /> 
   }
+  */
 
+  /*
   getAccountsDropDownOptions() {
     var options = []
     const accounts = this.state.openAir.userAccounts
@@ -227,12 +234,13 @@ export class OpenAirComponent extends Component {
       const item = { key: i, value: i, text : accounts[i] }
       options.push(item);
     }
-    //options = [{ key: 'af', value: 'af', text: 'Afghanistan' }, { key: 'ax', value: 'ax', text: 'Aland Islands' }]
     return options
   }
+  */
 
   async onParticipate() {
-    const currentUserAccount = this.state.openAir.userAccounts[this.state.openAir.currentUserAccountIndex]
+    const currentUserAccount = this.state.openAir.currentUserAccount
+    console.log('currentUserAccount=' + currentUserAccount)
     const openAirInstance = getOpenAirInstance(this.state.openAir.address)
     await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: currentUserAccount})
     
@@ -281,7 +289,7 @@ export class OpenAirComponent extends Component {
   }
 
   async onSubmitSpeech(event) {
-    const currentUserAccount = this.state.openAir.userAccounts[this.state.openAir.currentUserAccountIndex]
+    const currentUserAccount = this.state.openAir.currentUserAccount
     const openAirInstance = getOpenAirInstance(this.state.openAir.address)
     await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: currentUserAccount})
     const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
