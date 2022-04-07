@@ -157,15 +157,18 @@ export class OpenAirComponent extends Component {
         <div>
           <Segment inverted color='blue'>
             <Table columns={2} padded>
+              <Table.Body>
               {this.headerGridRow('ethereum', 'OpenAir Contract Address:', this.state.openAir.address)}
               {this.headerGridRow('ethereum', 'OpenAir Contract Creator:', this.state.openAir.creator)}
               {this.headerGridRow('ethereum', 'OpinionToken(AIR) Contract Address: ', this.state.openAir.tokenContractAddress)}
-              {this.headerGridRow('money bill alternate outline', 'Tokens in Contract Coffer', this.state.openAir.tokensInCoffer)}         
+              {this.headerGridRow('money bill alternate outline', 'Tokens in Contract Coffer', this.state.openAir.tokensInCoffer)} 
+              </Table.Body>        
             </Table>
           </Segment>
 
           <Segment inverted color='green'>
             <Table columns={2} padded>
+            <Table.Body>
               <Table.Row>
                 <Table.Cell className='warning'>  
                   <Header as='h5' color='green'>
@@ -192,7 +195,8 @@ export class OpenAirComponent extends Component {
                 <Table.Cell color='green'>
                   {this.state.openAir.currentUserAccountBalance}
                 </Table.Cell>
-              </Table.Row>      
+              </Table.Row> 
+              </Table.Body>     
             </Table>
           </Segment>
 
@@ -281,6 +285,7 @@ export class OpenAirComponent extends Component {
       </Segment>      
     } else {   //this.WORKSPACE_MODE_NONE
       return <Table>
+        <Table.Body>
         <Table.Row>
         <Table.Cell>
           <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_SPEAKING})}}>
@@ -299,6 +304,7 @@ export class OpenAirComponent extends Component {
           </Button>
         </Table.Cell>        
         </Table.Row>
+        </Table.Body>
         </Table>
     }
 
