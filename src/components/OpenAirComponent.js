@@ -2,13 +2,18 @@ import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
 import { getSpeechInstance } from '../web3/speechContract'
-import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table } from 'semantic-ui-react'
+import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table, Grid, GridRow, GridColumn} from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
 
   TAB_TYPE_FIELD = '0'
   TAB_TYPE_AREA = '1'
+
+  WORKSPACE_MODE_SPEAKING = '0'
+  WORKSPACE_MODE_VOTING = '1'
+  WORKSPACE_MODE_NONE = '2'
+
 
 
   state = {
@@ -17,17 +22,18 @@ export class OpenAirComponent extends Component {
       tokenContractAddress: 'n/a',
 
       userAccount: 'invalid',
-      userAccountBalance: 0
+      userAccountBalance: 0,
+      selectedSpeechIndex: 0
     },
     
-    speechTitle: "Title",
-    speechContent: "...",
-    activeSpeechRowIndex: 0
+    isSpeaking: this.WORKSPACE_MODE_NONE,
+    newSpeechTitle: "Title",
+    newSpeechContent: "..."
   }
 
   constructor(props) {
     super(props)
-    this.onSubmit = this.onSubmit.bind(this)
+    this.onSubmitSpeech = this.onSubmitSpeech.bind(this)
     this.onParticipate = this.onParticipate.bind(this)
   }
 
@@ -58,6 +64,7 @@ export class OpenAirComponent extends Component {
     const areas = await contract.methods.getAreaNames(fields[0]).call()
     const speeches = await contract.methods.getSpeeches(fields[0], areas[0]).call()
     const chargePerSpeech = await contract.methods.getChargePerSpeech().call()
+    const chargePerVote = await contract.methods.getChargePerVote().call()
     const awardPerAreaParticipation = await contract.methods.getAwardForParticipation().call()
     const awardToVoterPerFollower = await contract.methods.getAwardToVoterPerFollower().call()
     const awardToSpeakerPerUpVote = await contract.methods.getAwardToSpeakerPerUpVote().call()
@@ -100,6 +107,7 @@ export class OpenAirComponent extends Component {
       userAccount: userAccount,
       userAccountBalance: userAccountBalance,
       chargePerSpeech: chargePerSpeech,
+      chargePerVote: chargePerVote,
       awardPerAreaParticipation: awardPerAreaParticipation,
       awardToVoterPerFollower: awardToVoterPerFollower,
       awardToSpeakerPerUpVote: awardToSpeakerPerUpVote,
@@ -107,9 +115,27 @@ export class OpenAirComponent extends Component {
     }
   }
 
+  headerGridRow(iconName, label, value) {
+    return <Table.Row>
+      <Table.Cell className='warning'>  
+        <Header as='h5' color='blue' inverted>
+        <Icon name={iconName}/>
+          <Header.Content>
+            {label}
+          </Header.Content>
+        </Header>
+        
+      </Table.Cell>
+      <Table.Cell color='blue'>
+        {value}
+      </Table.Cell>
+    </Table.Row>
+  }
+
   render() {
     return (
       <div>
+        
         <Header icon color="blue" size='huge'>
           <Icon name='skyatlas' />
             Open Air
@@ -120,15 +146,18 @@ export class OpenAirComponent extends Component {
 
         <div className="ui divider"></div>
         <div>
-          {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract address:', this.state.openAir.address)}
-          {this.iconLabelsField('blue', 'ethereum', 'OpenAir contract creator:', this.state.openAir.creator)}
- 
-          {this.iconLabelsField('blue', 'ethereum', 'OpinionToken contract address: ', this.state.openAir.tokenContractAddress)}
-          
-          {this.iconLabelsField('blue','money bill alternate outline', 'Tokens in coffer', this.state.openAir.tokensInCoffer)}
+          <Segment inverted color='blue'>
+            <Table columns={2} celled='internally' padded>
+              {this.headerGridRow('ethereum', 'OpenAir Contract Address:', this.state.openAir.address)}
+              {this.headerGridRow('ethereum', 'OpenAir Contract Creator:', this.state.openAir.creator)}
+              {this.headerGridRow('ethereum', 'OpinionToken(AIR) Contract Address: ', this.state.openAir.tokenContractAddress)}
+              {this.headerGridRow('money bill alternate outline', 'Tokens in Contract Coffer', this.state.openAir.tokensInCoffer)}         
+            </Table>
+          </Segment>
          
           {this.iconLabelsField('green', 'ethereum', 'User accout: ', this.state.openAir.userAccount)}
           {this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.userAccountBalance)}
+          <Divider horizontal></Divider>
 
           
           <div>
@@ -138,21 +167,78 @@ export class OpenAirComponent extends Component {
         </div>
 
         <Divider horizontal></Divider>
-        <Segment inverted color="green">
-          <Form inverted onSubmit={this.onSubmit}>
-            <Form.Input fluid label='Title' placeholder={this.state.openAir.speechTitle} onChange={(e) => this.setState({speechTitle: e.target.value})}/>
-            <Form.TextArea label='Speech' placeholder={this.state.openAir.speechTitle} onChange={(e) => this.setState({speechContent: e.target.value})}/>
-            <Form.Button color="blue">
-              <Icon name='microphone' />
-              Submit
-            </Form.Button>
-            <p>(Charge per speech: {this.state.openAir.chargePerSpeech})</p>
-          </Form>
-        </Segment>
+        {this.workspaceUI(this.state.isSpeaking)}
+
       </div>
     );
   }
 
+  async onParticipate() {
+    const openAirInstance = getOpenAirInstance(this.state.openAir.address)
+    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: this.state.openAir.userAccount})
+    
+    //refresh state
+    const openAirState = await this.getOpenAirState(this.state.openAir.address)
+    this.setState({
+      openAir: openAirState
+    })
+    alert("Participated.")
+  }
+
+  workspaceUI(mode) {
+    if (mode === this.WORKSPACE_MODE_SPEAKING) {
+      return  <Segment inverted color="green">
+        <Form inverted onSubmit={this.onSubmitSpeech}>
+          <Form.Input fluid label='Title' placeholder={this.state.newSpeechTitle} onChange={(e) => this.setState({newSpeechTitle: e.target.value})}/>
+          <Form.TextArea label='Speech' placeholder={this.state.newSpeechContent} onChange={(e) => this.setState({newSpeechContent: e.target.value})}/>
+          <Form.Button color="blue">
+            <Icon name='microphone' />
+            Submit
+          </Form.Button>
+          <p>(Charge per speech: {this.state.openAir.chargePerSpeech})</p>
+        </Form>
+      </Segment>
+    } else if (mode === this.WORKSPACE_MODE_VOTING) {
+      return  <Segment inverted color="grey">
+        <Form inverted onSubmit={this.onSubmit}>
+        <Form.Input fluid label='Title' placeholder={this.state.openAir.selectedSpeechTitle}/>
+          <Form.TextArea label='Speech' placeholder={this.state.openAir.selectedSpeechContent} />
+          <Form.Button color="blue">
+            <Icon name='microphone' />
+            Vote
+          </Form.Button>
+          <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
+        </Form>
+      </Segment>      
+    } else {   //mode == this.WORKSPACE_MODE_NONE
+      return <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({isSpeaking : true})}}>
+        <Label color='green'>
+          <Icon name='bullhorn' />
+          Speak
+        </Label>
+      </Button>
+    }
+
+  }
+
+  async onSubmitSpeech(event) {
+    const openAirInstance = getOpenAirInstance(this.state.openAir.address)
+    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: this.state.openAir.userAccount})
+    const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
+    const tokenContract = getOpinionTokenInstance(this.state.openAir.tokenContractAddress)
+    await tokenContract.methods.approveAndSpeak(this.state.openAir.address, chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.speechTitle, this.state.speechContent).send({
+      from: this.state.openAir.userAccount,
+      gasPrice: 1000,
+      gas: 10000000000})
+
+    const openAirState = await this.getOpenAirState(this.state.openAir.address)
+    this.setState({
+      openAir: openAirState,
+      isSpeaking: this.WORKSPACE_MODE_NONE
+
+    })
+    alert("Submitted.")
+  }
 
   getPanes(tabNames, tabType) {
     //console.log("tabNames=" + tabNames)
@@ -220,7 +306,9 @@ export class OpenAirComponent extends Component {
 
   setActiveRow(index) {
     this.setState({
-      activeSpeechRowIndex: index
+      openAir: {
+        selectedSpeechIndex: index
+      }
     });
   }
 
@@ -239,33 +327,6 @@ export class OpenAirComponent extends Component {
     </div>
   }
 
-  async onParticipate() {
-    const openAirInstance = getOpenAirInstance(this.state.openAir.address)
-    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: this.state.openAir.userAccount})
-    
-    //refresh state
-    const openAirState = await this.getOpenAirState(this.state.openAir.address)
-    this.setState({
-      openAir: openAirState
-    })
-    alert("Participated.")
-  }
 
-  async onSubmit(event) {
-    const openAirInstance = getOpenAirInstance(this.state.openAir.address)
-    await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: this.state.openAir.userAccount})
-    const chargePerSpeech = (await openAirInstance.methods.getChargePerSpeech().call())
-    const tokenContract = getOpinionTokenInstance(this.state.openAir.tokenContractAddress)
-    await tokenContract.methods.approveAndSpeak(this.state.openAir.address, chargePerSpeech, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.speechTitle, this.state.speechContent).send({
-      from: this.state.openAir.userAccount,
-      gasPrice: 1000,
-      gas: 10000000000})
-
-    const openAirState = await this.getOpenAirState(this.state.openAir.address)
-    this.setState({
-      openAir: openAirState
-    })
-    alert("Submitted.")
-  }
 
 }

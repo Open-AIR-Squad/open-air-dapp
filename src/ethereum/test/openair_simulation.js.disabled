@@ -1,0 +1,54 @@
+const OpenAir = artifacts.require("OpenAir");
+const OpinionToken = artifacts.require("OpinionToken");
+
+contract('OpenAir', (accounts) => {
+  let openAirInstance, opinionTokenInstance;
+  beforeEach(async () => {
+    //openAirInstance = await OpenAir.deployed();
+    openAirInstance = await OpenAir.new(); //new() would reset the context, so as not for the test case to be polluted by preceding ones
+    opinionTokenInstance = await OpinionToken.at(await openAirInstance.getTokenContractAddress.call());
+  });
+
+
+  it('test creating speeches and votes', async () => {
+
+    const fieldName = "CIBC";
+    const areaName1 = "Innovation";
+    const areaName2 = "Goverance";
+    await openAirInstance.addArea(fieldName, areaName); //this call is restricted to "moderator" - that the contract creator is acting initially 
+
+    //sign up on the area so as to get some starting balance in account
+    await openAirInstance.registerAreaParticipation(fieldName, areaName, {from: accounts[2]}); 
+    await openAirInstance.registerAreaParticipation(fieldName, areaName, {from: accounts[3]}); 
+    await openAirInstance.registerAreaParticipation(fieldName, areaName, {from: accounts[4]});
+    
+
+    //generate a speech to vote against
+    const chargePerSpeech = (await openAirInstance.getChargePerSpeech.call()).toNumber();
+    await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName, "This is a Test Title", "This is a test content.",  {from: speaker}); 
+
+    //voter1 upvotes
+    var voter1BalanceBefore = (await opinionTokenInstance.balanceOf.call(voter1)).toNumber();
+    const chargePerVote = (await openAirInstance.getChargePerVote.call()).toNumber();
+    await opinionTokenInstance.approveAndVote(openAirInstance.address, chargePerVote, fieldName, areaName, 0,  true, "I totally agree!", {from: voter1}); 
+    var voter1BalanceAfter = (await opinionTokenInstance.balanceOf.call(voter1)).toNumber();
+    assert.equal(voter1BalanceAfter, voter1BalanceBefore - chargePerVote, "A charge for voting should be deducted from voter account.");
+  
+    //voter2 upvotes
+    var speakerBalanceBefore = (await opinionTokenInstance.balanceOf.call(speaker)).toNumber();
+    const awardToVoterPerFollower = (await openAirInstance.getAwardToVoterPerFollower.call()).toNumber();
+    const awardToSpeakerPerUpVote = (await openAirInstance.getAwardToSpeakerPerUpVote.call()).toNumber();
+    voter1BalanceBefore = (await opinionTokenInstance.balanceOf.call(voter1)).toNumber();
+    await opinionTokenInstance.approveAndVote(openAirInstance.address, chargePerVote, fieldName, areaName, 0,  true, "I second!", {from: voter2}); 
+    voter1BalanceAfter = (await opinionTokenInstance.balanceOf.call(voter1)).toNumber();
+    var speakerBalanceAfter = (await opinionTokenInstance.balanceOf.call(speaker)).toNumber();
+    assert.equal(speakerBalanceAfter, speakerBalanceBefore + awardToSpeakerPerUpVote, "An award should be given to the speaker for each upvote.");
+    assert.equal(voter1BalanceAfter, voter1BalanceBefore + awardToVoterPerFollower, "An award should be given to leading voter for each following voter on the same side.");
+        
+    
+    //assert.isTrue(false, "Purposely failed to show events");  //no need to use this - Truffle test has a '--show-events' option
+  });
+
+});
+
+
