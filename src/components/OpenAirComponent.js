@@ -32,7 +32,8 @@ export class OpenAirComponent extends Component {
     workspaceMode: this.WORKSPACE_MODE_NONE,
     newSpeechTitle: "Title",
     newSpeechContent: "...",
-    selectedSpeechIndex: 0
+    selectedSpeechIndex: 0,
+    votingChoice: 'neutral'
   }
 
   constructor(props) {
@@ -280,6 +281,7 @@ export class OpenAirComponent extends Component {
         </Form>
       </Segment>
     } else if (this.state.workspaceMode === this.WORKSPACE_MODE_VOTING) {
+      const { value } = this.state.votingChoice
       return  <Segment inverted color="grey">
         <Form inverted onSubmit={this.onSubmitVote}>
           <Form.Input fluid label='Index' placeholder={this.state.selectedSpeechIndex}/>
@@ -290,6 +292,31 @@ export class OpenAirComponent extends Component {
             Vote
           </Form.Button>
           <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
+        </Form>
+        <Form>
+          <Form.Group inline>
+            <label>Vote</label>
+            <Form.Radio
+              label='Like'
+              value='like'
+              checked={value === 'like'}
+              onChange={this.handleChange}
+            />
+            <Form.Radio
+              label='Neutral'
+              value='neutral'
+              checked={value === 'neutral'}
+              onChange={this.handleChange}
+            />
+            <Form.Radio
+              label='Dislike'
+              value='dislike'
+              checked={value === 'dislike'}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+          <Form.TextArea label='Optional comment:' placeholder=' ...' />
+          <Form.Button>Done</Form.Button>
         </Form>
       </Segment>      
     } else {   //this.WORKSPACE_MODE_NONE
