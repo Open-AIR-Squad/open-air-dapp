@@ -308,7 +308,7 @@ export class OpenAirComponent extends Component {
           <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_VOTING})}}>
             <Label color='green'>
               <Icon name='arrow circle right' />
-              Vote
+              Enter and Vote
             </Label>
           </Button>
         </Table.Cell>        
@@ -364,7 +364,7 @@ export class OpenAirComponent extends Component {
         </Button> 
         <p>(Award per area participation: {this.state.openAir.awardPerAreaParticipation})</p>
         <div>
-          <Table celled fixed singleLine compact size="small" selectable>
+          <Table celled singleLine compact size="small" selectable>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Index</Table.HeaderCell>
@@ -392,7 +392,7 @@ export class OpenAirComponent extends Component {
         >
           <Table.Cell title={item.index}>{item.index}</Table.Cell>
           <Table.Cell title={item.title}>{item.title}</Table.Cell>
-          <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs up', '', 0)}  </Table.Cell>
+          <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs up', '', 0)}  </Table.Cell>
           <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs down', '', 0)} </Table.Cell>
         </Table.Row>
       );
