@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
 import { getSpeechInstance } from '../web3/speechContract'
-import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table, Grid, GridRow, GridColumn} from 'semantic-ui-react'
+import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table, Select, Input, Dropdown} from 'semantic-ui-react'
 
 
 export class OpenAirComponent extends Component {
@@ -118,7 +118,7 @@ export class OpenAirComponent extends Component {
   headerGridRow(iconName, label, value) {
     return <Table.Row>
       <Table.Cell className='warning'>  
-        <Header as='h5' color='blue' inverted>
+        <Header as='h5' color='blue'>
         <Icon name={iconName}/>
           <Header.Content>
             {label}
@@ -147,14 +147,51 @@ export class OpenAirComponent extends Component {
         <div className="ui divider"></div>
         <div>
           <Segment inverted color='blue'>
-            <Table columns={2} celled='internally' padded>
+            <Table columns={2} padded>
               {this.headerGridRow('ethereum', 'OpenAir Contract Address:', this.state.openAir.address)}
               {this.headerGridRow('ethereum', 'OpenAir Contract Creator:', this.state.openAir.creator)}
               {this.headerGridRow('ethereum', 'OpinionToken(AIR) Contract Address: ', this.state.openAir.tokenContractAddress)}
               {this.headerGridRow('money bill alternate outline', 'Tokens in Contract Coffer', this.state.openAir.tokensInCoffer)}         
             </Table>
           </Segment>
-         
+
+          <Segment inverted color='green'>
+            <Table columns={2} padded>
+              <Table.Row>
+                <Table.Cell className='warning'>  
+                  <Header as='h5' color='green'>
+                  <Icon name='ethereum'/>
+                    <Header.Content>
+                      Current User Account:
+                    </Header.Content>
+                  </Header>
+                </Table.Cell>
+                <Table.Cell color='green'>
+                  <Dropdown
+                    className="ui primary"
+                    onChange={this.handleDropDownSelect}         
+                    options={[{ key: 'af', value: 'af', text: 'Afghanistan' }, { key: 'ax', value: 'ax', text: 'Aland Islands' }]}
+                    defaultValue='af'
+                  /> 
+                </Table.Cell>
+              </Table.Row>  
+              <Table.Row>
+                <Table.Cell className='warning'>  
+                  <Header as='h5' color='green'>
+                  <Icon name='money bill alternate outline'/>
+                    <Header.Content>
+                      Current User Account Balance:
+                    </Header.Content>
+                  </Header>
+                </Table.Cell>
+                <Table.Cell color='green'>
+                  {this.state.openAir.userAccountBalance}
+                </Table.Cell>
+              </Table.Row>      
+            </Table>
+          </Segment>
+
+
           {this.iconLabelsField('green', 'ethereum', 'User accout: ', this.state.openAir.userAccount)}
           {this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.userAccountBalance)}
           <Divider horizontal></Divider>
