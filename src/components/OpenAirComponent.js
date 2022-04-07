@@ -22,7 +22,6 @@ export class OpenAirComponent extends Component {
       tokenContractAddress: 'n/a',
 
       userAccountBalance: 0,
-      selectedSpeechIndex: 0,
 
       //userAccounts: [],
       //currentUserAccountIndex: 0,
@@ -32,7 +31,8 @@ export class OpenAirComponent extends Component {
     
     workspaceMode: this.WORKSPACE_MODE_NONE,
     newSpeechTitle: "Title",
-    newSpeechContent: "..."
+    newSpeechContent: "...",
+    selectedSpeechIndex: 0
   }
 
   constructor(props) {
@@ -280,12 +280,26 @@ export class OpenAirComponent extends Component {
         </Form>
       </Segment>      
     } else {   //this.WORKSPACE_MODE_NONE
-      return <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_SPEAKING})}}>
-        <Label color='green'>
-          <Icon name='bullhorn' />
-          Speak
-        </Label>
-      </Button>
+      return <Table>
+        <Table.Row>
+        <Table.Cell>
+          <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_SPEAKING})}}>
+            <Label color='green'>
+              <Icon name='bullhorn' />
+              Speak
+            </Label>
+          </Button>
+        </Table.Cell>
+        <Table.Cell>
+          <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_VOTING})}}>
+            <Label color='green'>
+              <Icon name='arrow circle right' />
+              Vote
+            </Label>
+          </Button>
+        </Table.Cell>        
+        </Table.Row>
+        </Table>
     }
 
   }
@@ -308,7 +322,8 @@ export class OpenAirComponent extends Component {
   }
 
   getPanes(tabNames, tabType) {
-    //console.log("tabNames=" + tabNames)
+
+    console.log("tabNames=" + tabNames, 'this.state.openAir.fields=' + this.state.openAir.fields)
     if (tabNames) {
       return tabNames.map((tabName) => ({ 
         menuItem: tabName, 
@@ -373,9 +388,7 @@ export class OpenAirComponent extends Component {
 
   setActiveRow(index) {
     this.setState({
-      openAir: {
         selectedSpeechIndex: index
-      }
     });
   }
 
