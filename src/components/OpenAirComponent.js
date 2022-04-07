@@ -74,9 +74,15 @@ export class OpenAirComponent extends Component {
     const awardToSpeakerPerUpVote = await contract.methods.getAwardToSpeakerPerUpVote().call()
     //const speechRows = await this.getSpeechRows(speeches)
     const rows = []
+    const speechTitles = []
+    const speechContents = []
     for (var i = 0; i < speeches.length; i ++) {
       const speechInstance = getSpeechInstance(await contract.methods.getSpeechAddress(fields[0], areas[0], i).call())
-      rows[i] = {index: i, title: (await speechInstance.methods.getTitle().call())}
+      const speechTitle = await speechInstance.methods.getTitle().call()
+      const speechContent = await speechInstance.methods.getContent().call()
+      speechTitles[i] = speechTitle
+      speechContents[i] = speechContent
+      rows[i] = {index: i, title: speechTitle}
     }
       
 
@@ -117,6 +123,8 @@ export class OpenAirComponent extends Component {
       awardPerAreaParticipation: awardPerAreaParticipation,
       awardToVoterPerFollower: awardToVoterPerFollower,
       awardToSpeakerPerUpVote: awardToSpeakerPerUpVote,
+      speechTitles: speechTitles,
+      speechContents: speechContents,
       speechRows : rows,
       //userAccounts: userAccounts,
       currentUserAccount: currentUserAccount,
@@ -273,10 +281,11 @@ export class OpenAirComponent extends Component {
       </Segment>
     } else if (this.state.workspaceMode === this.WORKSPACE_MODE_VOTING) {
       return  <Segment inverted color="grey">
-        <Form inverted onSubmit={this.onSubmit}>
-        <Form.Input fluid label='Title' placeholder={this.state.openAir.selectedSpeechTitle}/>
-          <Form.TextArea label='Speech' placeholder={this.state.openAir.selectedSpeechContent} />
-          <Form.Button color="blue">
+        <Form inverted onSubmit={this.onSubmitVote}>
+          <Form.Input fluid label='Index' placeholder={this.state.selectedSpeechIndex}/>
+          <Form.Input fluid label='Title' placeholder={this.state.openAir.speechTitles[this.state.selectedSpeechIndex]}/>
+          <Form.TextArea label='Speech' placeholder={this.state.openAir.speechContents[this.state.selectedSpeechIndex]} />
+          <Form.Button color="green">
             <Icon name='microphone' />
             Vote
           </Form.Button>
