@@ -442,8 +442,8 @@ export class OpenAirComponent extends Component {
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Index</Table.HeaderCell>
-                <Table.HeaderCell>Title</Table.HeaderCell>
                 <Table.HeaderCell>Speaker</Table.HeaderCell>
+                <Table.HeaderCell>Title</Table.HeaderCell>
                 <Table.HeaderCell></Table.HeaderCell>
                 <Table.HeaderCell></Table.HeaderCell>
               </Table.Row>
@@ -466,8 +466,8 @@ export class OpenAirComponent extends Component {
           }}
         >
           <Table.Cell title={item.index}>{item.index}</Table.Cell>
-          <Table.Cell title={item.title}>{item.title}</Table.Cell>
           <Table.Cell title={item.title}>{item.author}</Table.Cell>
+          <Table.Cell title={item.title}>{item.title}</Table.Cell>
           <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs up', '', this.state.openAir.speechUpVoteCounts[item.index])}  </Table.Cell>
           <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs down', '', this.state.openAir.speechDownVoteCounts[item.index])} </Table.Cell>
         </Table.Row>
