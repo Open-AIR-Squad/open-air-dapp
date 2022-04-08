@@ -232,8 +232,8 @@ export class OpenAirComponent extends Component {
 
           <Segment inverted color='brown'>
           <div>
-            <Tab menu={{ pointing: true, fluid: true, tabular: true }} panes={this.getPanes(this.state.openAir.fields, this.TAB_TYPE_FIELD)} />
-            <Tab menu={{ fluid: true, vertical: true, tabular: true }} panes={this.getPanes(this.state.openAir.areas, this.TAB_TYPE_AREA)} />
+            <Tab menu={{ pointing: true, fluid: true, tabular: true, attached: 'top'}} panes={this.getPanes(this.state.openAir.fields, this.TAB_TYPE_FIELD)} />
+            <Tab menu={{ pointing: true, fluid: true, vertical: true, tabular: true }} panes={this.getPanes(this.state.openAir.areas, this.TAB_TYPE_AREA)} />
           </div> 
           </Segment>             
         </div>
@@ -282,8 +282,7 @@ export class OpenAirComponent extends Component {
     alert("Participated.")
   }
 
-  workspaceUI() {
-    
+  workspaceUI() {  
     if (this.state.workspaceMode === this.WORKSPACE_MODE_SPEAKING) {
       //alert('in speaking mode.'); 
       return  <Segment inverted color="green">
