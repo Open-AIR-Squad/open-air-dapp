@@ -96,7 +96,7 @@ export class OpenAirComponent extends Component {
       speechAuthors[i] = speechAuthor
       speechUpVoteCounts[i] = speechUpVoteCount
       speechDownVoteCounts[i] = speechDownVoteCount
-      rows[i] = {index: i, title: speechTitle}
+      rows[i] = {index: i, title: speechTitle, author: speechAuthor}
     }
       
 
@@ -425,7 +425,7 @@ export class OpenAirComponent extends Component {
     var content //= tabName + ' Subject Areas'
     if (tabType === this.TAB_TYPE_AREA) {
       content = this.areaInteractionSection(tabName)
-    }
+    } 
     return content
   }
 
@@ -443,6 +443,7 @@ export class OpenAirComponent extends Component {
               <Table.Row>
                 <Table.HeaderCell>Index</Table.HeaderCell>
                 <Table.HeaderCell>Title</Table.HeaderCell>
+                <Table.HeaderCell>Speaker</Table.HeaderCell>
                 <Table.HeaderCell></Table.HeaderCell>
                 <Table.HeaderCell></Table.HeaderCell>
               </Table.Row>
@@ -466,6 +467,7 @@ export class OpenAirComponent extends Component {
         >
           <Table.Cell title={item.index}>{item.index}</Table.Cell>
           <Table.Cell title={item.title}>{item.title}</Table.Cell>
+          <Table.Cell title={item.title}>{item.author}</Table.Cell>
           <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs up', '', this.state.openAir.speechUpVoteCounts[item.index])}  </Table.Cell>
           <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs down', '', this.state.openAir.speechDownVoteCounts[item.index])} </Table.Cell>
         </Table.Row>
