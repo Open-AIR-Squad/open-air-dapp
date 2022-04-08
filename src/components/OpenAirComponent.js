@@ -14,7 +14,9 @@ export class OpenAirComponent extends Component {
   WORKSPACE_MODE_VOTING = '1'
   WORKSPACE_MODE_NONE = '2'
 
-
+  VOTE_LIKE = 'like'
+  VOTE_NEUTRAL = 'neutral'
+  VOTE_DISLIKE = 'dislike'
 
   state = {
     openAir: {
@@ -33,13 +35,15 @@ export class OpenAirComponent extends Component {
     newSpeechTitle: "Title",
     newSpeechContent: "...",
     selectedSpeechIndex: 0,
-    votingChoice: 'neutral'
+    votingChoice: this.VOTE_NEUTRAL
   }
 
   constructor(props) {
     super(props)
     this.onSubmitSpeech = this.onSubmitSpeech.bind(this)
     this.onParticipate = this.onParticipate.bind(this)
+    this.handleVoteRadioChange = this.handleVoteRadioChange.bind(this)
+    this.onVotingDone = this.onVotingDone.bind(this)
   }
 
   async componentDidMount() {
@@ -77,12 +81,21 @@ export class OpenAirComponent extends Component {
     const rows = []
     const speechTitles = []
     const speechContents = []
+    const speechAuthors = []
+    const speechUpVoteCounts = []
+    const speechDownVoteCounts = []
     for (var i = 0; i < speeches.length; i ++) {
       const speechInstance = getSpeechInstance(await contract.methods.getSpeechAddress(fields[0], areas[0], i).call())
       const speechTitle = await speechInstance.methods.getTitle().call()
       const speechContent = await speechInstance.methods.getContent().call()
+      const speechAuthor = await speechInstance.methods.getSpeaker().call()
+      const speechUpVoteCount = (await speechInstance.methods.getUpVotes().call()).length
+      const speechDownVoteCount = (await speechInstance.methods.getDownVotes().call()).length
       speechTitles[i] = speechTitle
       speechContents[i] = speechContent
+      speechAuthors[i] = speechAuthor
+      speechUpVoteCounts[i] = speechUpVoteCount
+      speechDownVoteCounts[i] = speechDownVoteCount
       rows[i] = {index: i, title: speechTitle}
     }
       
@@ -126,6 +139,9 @@ export class OpenAirComponent extends Component {
       awardToSpeakerPerUpVote: awardToSpeakerPerUpVote,
       speechTitles: speechTitles,
       speechContents: speechContents,
+      speechAuthors : speechAuthors,
+      speechUpVoteCounts : speechUpVoteCounts,
+      speechDownVoteCounts : speechDownVoteCounts,     
       speechRows : rows,
       //userAccounts: userAccounts,
       currentUserAccount: currentUserAccount,
@@ -214,11 +230,12 @@ export class OpenAirComponent extends Component {
           {/*this.iconLabelsField('green', 'money bill alternate outline', 'User account balance', this.state.openAir.currentUserAccountBalance)*/}
           <Divider horizontal></Divider>
 
-          
+          <Segment inverted color='brown'>
           <div>
-            <Tab menu={{ pointing: true }} panes={this.getPanes(this.state.openAir.fields, this.TAB_TYPE_FIELD)} />
+            <Tab menu={{ pointing: true, fluid: true, tabular: true }} panes={this.getPanes(this.state.openAir.fields, this.TAB_TYPE_FIELD)} />
             <Tab menu={{ fluid: true, vertical: true, tabular: true }} panes={this.getPanes(this.state.openAir.areas, this.TAB_TYPE_AREA)} />
-          </div>              
+          </div> 
+          </Segment>             
         </div>
 
         <Divider horizontal></Divider>
@@ -283,40 +300,39 @@ export class OpenAirComponent extends Component {
     } else if (this.state.workspaceMode === this.WORKSPACE_MODE_VOTING) {
       const value = this.state.votingChoice
       return  <Segment inverted color="grey">
-        <Form inverted onSubmit={this.onSubmitVote}>
+        <Form inverted>
           <Form.Input fluid label='Index' placeholder={this.state.selectedSpeechIndex}/>
           <Form.Input fluid label='Title' placeholder={this.state.openAir.speechTitles[this.state.selectedSpeechIndex]}/>
           <Form.TextArea label='Speech' placeholder={this.state.openAir.speechContents[this.state.selectedSpeechIndex]} />
-          <Form.Button color="green">
-            <Icon name='microphone' />
-            Vote
-          </Form.Button>
-          <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
         </Form>
         <Form>
           <Form.Group inline>
             <label>Vote</label>
             <Form.Radio
               label='Like'
-              value='like'
-              checked={value === 'like'}
-              onChange={this.handleChange}
+              value= {this.VOTE_LIKE}
+              checked={value === this.VOTE_LIKE}
+              onChange={this.handleVoteRadioChange}
             />
             <Form.Radio
               label='Neutral'
-              value='neutral'
-              checked={value === 'neutral'}
-              onChange={this.handleChange}
+              value={this.VOTE_NEUTRAL}
+              checked={value === this.VOTE_NEUTRAL}
+              onChange={this.handleVoteRadioChange}
             />
             <Form.Radio
               label='Dislike'
-              value='dislike'
-              checked={value === 'dislike'}
-              onChange={this.handleChange}
+              value={this.VOTE_DISLIKE}
+              checked={value === this.VOTE_DISLIKE}
+              onChange={this.handleVoteRadioChange}
             />
           </Form.Group>
-          <Form.TextArea label='Optional comment:' placeholder=' ...' />
-          <Form.Button onClick={()=>{this.setState({ workspaceMode: this.WORKSPACE_MODE_NONE})}}>Done</Form.Button>
+          <Form.TextArea label='Optional comment:' placeholder={this.state.votingComment}  onChange={(e) => this.setState({votingComment: e.target.value})}/>
+          <Form.Button color="green" onClick={this.onVotingDone}> 
+            Done
+            <Icon name='arrow circle right' />
+          </Form.Button>
+          <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
         </Form>
       </Segment>      
     } else {   //this.WORKSPACE_MODE_NONE
@@ -343,7 +359,39 @@ export class OpenAirComponent extends Component {
         </Table.Body>
         </Table>
     }
+  }
 
+  handleVoteRadioChange(event, value) {
+    if (value.value !== this.state.votingChoice) {
+      this.setState({ votingChoice : value.value})
+    }
+  }
+
+  async onVotingDone(event) {
+    this.setState({
+      workspaceMode: this.WORKSPACE_MODE_NONE
+    })
+
+    if (this.state.votingChoice !== this.VOTE_NEUTRAL) {
+      let isUpVote
+      if (this.state.votingChoice === this.VOTE_LIKE) {
+        isUpVote = true
+      } else {
+        isUpVote = false
+      }
+      const currentUserAccount = this.state.openAir.currentUserAccount
+      const openAirInstance = getOpenAirInstance(this.state.openAir.address)
+      await openAirInstance.methods.registerAreaParticipation(this.state.openAir.currentField, this.state.openAir.currentArea).send({from: currentUserAccount})
+      
+      const tokenContract = getOpinionTokenInstance(this.state.openAir.tokenContractAddress)
+      await tokenContract.methods.approveAndVote(this.state.openAir.address, this.state.openAir.chargePerVote, this.state.openAir.currentField, this.state.openAir.currentArea, this.state.selectedSpeechIndex, isUpVote, this.state.votingComment).send({
+        from: currentUserAccount})
+  
+      const openAirState = await this.getOpenAirState(this.state.openAir.address)
+      this.setState({
+        openAir: openAirState
+      })
+    } 
   }
 
   async onSubmitSpeech(event) {
@@ -375,7 +423,7 @@ export class OpenAirComponent extends Component {
   }
 
   getPaneContent(tabName, tabType) {
-    var content = tabName + ' Subject Areas'
+    var content //= tabName + ' Subject Areas'
     if (tabType === this.TAB_TYPE_AREA) {
       content = this.areaInteractionSection(tabName)
     }
@@ -419,8 +467,8 @@ export class OpenAirComponent extends Component {
         >
           <Table.Cell title={item.index}>{item.index}</Table.Cell>
           <Table.Cell title={item.title}>{item.title}</Table.Cell>
-          <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs up', '', 0)}  </Table.Cell>
-          <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs down', '', 0)} </Table.Cell>
+          <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs up', '', this.state.openAir.speechUpVoteCounts[item.index])}  </Table.Cell>
+          <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs down', '', this.state.openAir.speechDownVoteCounts[item.index])} </Table.Cell>
         </Table.Row>
       );
     });
