@@ -17,7 +17,7 @@ contract('OpenAir', (accounts) => {
     const areaName2 = "Goverance";
 
             //some initial fields and areas for testing of web app
-        //addField("Bank-wide");
+        //addField(
         await openAirInstance.addField("Bank-wide");
         //addArea("Bank-wide", "Innovation");
         await openAirInstance.addArea("Bank-wide", "Innovation");
@@ -53,7 +53,7 @@ contract('OpenAir', (accounts) => {
 
     //generate a speech to vote against
     const chargePerSpeech = (await openAirInstance.getChargePerSpeech.call()).toNumber();
-    await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "Blockchain Technology for Open corporate culture", "This is a test content."); 
+    await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "Blockchain techology can power open corporate culture", "As a requirement for the survival of companies, openness is necessary to build a culture of trust in organisations.\n\n Blockchain technology offers the advantages of *trust* and *transparency*.  "); 
     await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "The Open-Air DApp is awesome!", "This is a test content.", {from: account1}); 
     await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "Test titile in area 1 from account2", "This is a test content.", {from: account2}); 
     await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName2, "Test titile in area 2 from account0", "This is a test content."); 

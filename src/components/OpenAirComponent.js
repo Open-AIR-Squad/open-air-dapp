@@ -304,6 +304,7 @@ export class OpenAirComponent extends Component {
           <Form.Input fluid label='Title' placeholder={this.state.openAir.speechTitles[this.state.selectedSpeechIndex]}/>
           <Form.TextArea label='Speech' placeholder={this.state.openAir.speechContents[this.state.selectedSpeechIndex]} />
         </Form>
+        <Divider />
         <Form>
           <Form.Group inline>
             <label>Vote</label>
