@@ -102,7 +102,6 @@ contract('OpenAir', (accounts) => {
     await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName, "This is a Test Title", "This is a test content.",  {from: speaker}); 
     const balanceAfterSpeak = (await opinionTokenInstance.balanceOf.call(speaker)).toNumber();
     assert.equal(balanceAfterSpeak, balanceBeforeSpeak - chargePerSpeech, "A charge for speech should be deducted from account.")
-    //assert.isTrue(false, "Purposely failed to show events");
   });
 
 
@@ -140,9 +139,6 @@ contract('OpenAir', (accounts) => {
     var speakerBalanceAfter = (await opinionTokenInstance.balanceOf.call(speaker)).toNumber();
     assert.equal(speakerBalanceAfter, speakerBalanceBefore + awardToSpeakerPerUpVote, "An award should be given to the speaker for each upvote.");
     assert.equal(voter1BalanceAfter, voter1BalanceBefore + awardToVoterPerFollower, "An award should be given to leading voter for each following voter on the same side.");
-        
-    
-    //assert.isTrue(false, "Purposely failed to show events");  //no need to use this - Truffle test has a '--show-events' option
   });
 
 });
