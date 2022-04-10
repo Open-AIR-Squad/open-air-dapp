@@ -12,9 +12,27 @@ contract('OpenAir', (accounts) => {
 
   it('test simulation', async () => {
 
-    const fieldName = "CIBC";
+    const fieldName = "Bank-wide";
     const areaName1 = "Innovation";
     const areaName2 = "Goverance";
+
+            //some initial fields and areas for testing of web app
+        //addField("Bank-wide");
+        await openAirInstance.addField("Bank-wide");
+        //addArea("Bank-wide", "Innovation");
+        await openAirInstance.addArea("Bank-wide", "Innovation");
+        //addArea("Bank-wide", "Governance");
+        await openAirInstance.addArea("Bank-wide", "Governance");
+        //addArea("Bank-wide", "Work and Life");
+        await openAirInstance.addArea("Bank-wide", "Work and Life");
+        //addArea("Bank-wide", "Environment");
+        await openAirInstance.addArea("Bank-wide", "Environment");
+        
+        
+        await openAirInstance.addField("CIO Organization");
+        await openAirInstance.addField("Infrastructure");
+        await openAirInstance.addField("Retail Branches");
+
   
 
     const account0=accounts[0]
@@ -35,8 +53,8 @@ contract('OpenAir', (accounts) => {
 
     //generate a speech to vote against
     const chargePerSpeech = (await openAirInstance.getChargePerSpeech.call()).toNumber();
-    await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "Test titile in area 1 from account0", "This is a test content."); 
-    await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "Test titile in area 1 from account1", "This is a test content.", {from: account1}); 
+    await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "Blockchain Technology for Open corporate culture", "This is a test content."); 
+    await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "The Open-Air DApp is awesome!", "This is a test content.", {from: account1}); 
     await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName1, "Test titile in area 1 from account2", "This is a test content.", {from: account2}); 
     await opinionTokenInstance.approveAndSpeak(openAirInstance.address, chargePerSpeech, fieldName, areaName2, "Test titile in area 2 from account0", "This is a test content."); 
 
