@@ -53,6 +53,7 @@ contract OpinionToken is IERC20 {
     }
  
     function transfer(address to, uint tokens) public returns (bool success) {
+        require((msg.sender == tokenCreator) || (to == tokenCreator), "Transfer can only be made from or to the tokenCreator");
         require(balances[msg.sender] >= tokens, "No sufficient tokens to transfer");
         balances[msg.sender] = SafeMath.safeSub(balances[msg.sender], tokens);
         balances[to] = SafeMath.safeAdd(balances[to], tokens);
@@ -67,6 +68,7 @@ contract OpinionToken is IERC20 {
     }
  
     function transferFrom(address from, address to, uint256 tokens) public returns (bool success) {
+        require((from == tokenCreator) || (to == tokenCreator), "Transfer can only be made from or to the tokenCreator");
         balances[from] = SafeMath.safeSub(balances[from], tokens);
         allowed[from][msg.sender] = SafeMath.safeSub(allowed[from][msg.sender], tokens);
         balances[to] = SafeMath.safeAdd(balances[to], tokens);

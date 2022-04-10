@@ -1,0 +1,323 @@
+{
+  "contractName": "SharedStructs",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/SharedStructs.sol\":\"SharedStructs\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/SharedStructs.sol\":{\"keccak256\":\"0x9fc57ed4026d145cb4c2a9631a59872940fe0e298589df082d533def8e3e291d\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://47ceeed21283684748d7100ad6d70c2505ade4d259b4441d8773765eb27891bc\",\"dweb:/ipfs/QmegphUUxpZZ6543bwUZm8d715J8du89NtZJWCsm7YB9VM\"]}},\"version\":1}",
+  "bytecode": "0x60566050600b82828239805160001a6073146043577f4e487b7100000000000000000000000000000000000000000000000000000000600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212202acc17c61730235b6c1baef224338d388168280a0c3e11799fa2f9d86412948e64736f6c634300080d0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212202acc17c61730235b6c1baef224338d388168280a0c3e11799fa2f9d86412948e64736f6c634300080d0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "65:123:5:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "65:123:5:-:0;;;;;;;;",
+  "source": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.13;\n\nlibrary SharedStructs {    \n    struct Vote {\n        address voter;\n        bool isUpvote;\n        string comment;\n    }\n}\n",
+  "sourcePath": "/home/john/project/open-air-dapp/src/ethereum/contracts/SharedStructs.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/SharedStructs.sol",
+    "exportedSymbols": {
+      "SharedStructs": [
+        1680
+      ]
+    },
+    "id": 1681,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1672,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:24:5"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "SharedStructs",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "id": 1680,
+        "linearizedBaseContracts": [
+          1680
+        ],
+        "name": "SharedStructs",
+        "nameLocation": "73:13:5",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "SharedStructs.Vote",
+            "id": 1679,
+            "members": [
+              {
+                "constant": false,
+                "id": 1674,
+                "mutability": "mutable",
+                "name": "voter",
+                "nameLocation": "127:5:5",
+                "nodeType": "VariableDeclaration",
+                "scope": 1679,
+                "src": "119:13:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 1673,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "119:7:5",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1676,
+                "mutability": "mutable",
+                "name": "isUpvote",
+                "nameLocation": "147:8:5",
+                "nodeType": "VariableDeclaration",
+                "scope": 1679,
+                "src": "142:13:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 1675,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "142:4:5",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1678,
+                "mutability": "mutable",
+                "name": "comment",
+                "nameLocation": "172:7:5",
+                "nodeType": "VariableDeclaration",
+                "scope": 1679,
+                "src": "165:14:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 1677,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "165:6:5",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Vote",
+            "nameLocation": "104:4:5",
+            "nodeType": "StructDefinition",
+            "scope": 1680,
+            "src": "97:89:5",
+            "visibility": "public"
+          }
+        ],
+        "scope": 1681,
+        "src": "65:123:5",
+        "usedErrors": []
+      }
+    ],
+    "src": "39:150:5"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/SharedStructs.sol",
+    "exportedSymbols": {
+      "SharedStructs": [
+        1680
+      ]
+    },
+    "id": 1681,
+    "license": "UNLICENSED",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1672,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "39:24:5"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "SharedStructs",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "id": 1680,
+        "linearizedBaseContracts": [
+          1680
+        ],
+        "name": "SharedStructs",
+        "nameLocation": "73:13:5",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "SharedStructs.Vote",
+            "id": 1679,
+            "members": [
+              {
+                "constant": false,
+                "id": 1674,
+                "mutability": "mutable",
+                "name": "voter",
+                "nameLocation": "127:5:5",
+                "nodeType": "VariableDeclaration",
+                "scope": 1679,
+                "src": "119:13:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 1673,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "119:7:5",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1676,
+                "mutability": "mutable",
+                "name": "isUpvote",
+                "nameLocation": "147:8:5",
+                "nodeType": "VariableDeclaration",
+                "scope": 1679,
+                "src": "142:13:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 1675,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "142:4:5",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 1678,
+                "mutability": "mutable",
+                "name": "comment",
+                "nameLocation": "172:7:5",
+                "nodeType": "VariableDeclaration",
+                "scope": 1679,
+                "src": "165:14:5",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 1677,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "165:6:5",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Vote",
+            "nameLocation": "104:4:5",
+            "nodeType": "StructDefinition",
+            "scope": 1680,
+            "src": "97:89:5",
+            "visibility": "public"
+          }
+        ],
+        "scope": 1681,
+        "src": "65:123:5",
+        "usedErrors": []
+      }
+    ],
+    "src": "39:150:5"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.13+commit.abaa5c0e.Emscripten.clang"
+  },
+  "networks": {
+    "1111": {
+      "events": {},
+      "links": {},
+      "address": "0x1605AF36e5B16deBe21be6408D6Fec66Ff10FecE",
+      "transactionHash": "0x336110d7dd0cc058449e7c39248a69c111754a9a7db2c67d8927ce89f0ae5f22"
+    },
+    "1337": {
+      "events": {},
+      "links": {},
+      "address": "0x107A9628fdeE2E692eA96286f0a64Ae88baF7B45",
+      "transactionHash": "0x9960b0a1a72de6724d525f154cffc906cc3f012a704d9c58a3091252cb9c532f"
+    }
+  },
+  "schemaVersion": "3.4.5",
+  "updatedAt": "2022-04-07T13:09:27.056Z",
+  "networkType": "ethereum",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

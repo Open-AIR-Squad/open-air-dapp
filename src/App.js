@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
 import { Container, Menu } from 'semantic-ui-react';
 import './App.css';
-import { OpenAir } from './components/OpenAir';
+import { OpenAirComponent } from './components/OpenAirComponent';
 import { Home } from './components/Home';
 import { NotFound } from './components/NotFound';
 import history from './history';
@@ -27,7 +27,7 @@ class App extends Component {
 
           <Switch>
             <Route exact path='/' component={Home} />
-            <Route path='/open-air/:address' component={OpenAir}/>
+            <Route path='/open-air/:address' component={OpenAirComponent}/>
             <Route component={NotFound} />
           </Switch>
 

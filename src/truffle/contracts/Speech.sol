@@ -36,6 +36,14 @@ contract Speech {
         return speaker;
     }
 
+    function getTitle() public view returns (string memory) {
+        return title;
+    }
+
+    function getContent() public view returns (string memory) {
+        return content;
+    }
+
     function getUpVotes() public view returns (SharedStructs.Vote[] memory) {
         return upVotes;
     }    
