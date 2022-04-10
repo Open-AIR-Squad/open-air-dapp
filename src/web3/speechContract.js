@@ -1,5 +1,5 @@
 import { web3 } from "./web3"
-import Speech from '../ethereum/build/contracts/Speech.json'
+import Speech from '../truffle/build/contracts/Speech.json'
 
 
 export function getSpeechInstance(contractAddress) {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button, Header, Form } from 'semantic-ui-react'
 import { withRouter } from 'react-router';
 import { web3 } from '../web3/web3';
-import OpenAir from '../ethereum/build/contracts/OpenAir.json';
+import OpenAir from '../truffle/build/contracts/OpenAir.json';
 
 export class Home extends Component {
 

@@ -1,5 +1,5 @@
 import { web3 } from "./web3"
-import OpenAir from '../ethereum/build/contracts/OpenAir.json'
+import OpenAir from '../truffle/build/contracts/OpenAir.json'
 
 
 export function getOpenAirInstance(contractAddress) {
