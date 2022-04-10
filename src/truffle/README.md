@@ -72,6 +72,7 @@ Area - subject area, non-department-specific, i.e. open subjects, such as:
 ganache-cli -i 1337 -q --gasLimit=0x1fffffffffffff --allowUnlimitedContractSize -e 1000000000
 truffle migrate --reset --network ganache_cli
 truffle test --network ganache_cli --show-events
+truffle test test/openair_simulation.js --network ganache_cli --show-events
 
 truffle-flattener .\contracts\OpenAir.sol >> OpenAir-flattened.txt 
 is useful for running the contract on Remix  - Ref: https://medium.com/linum-labs/error-vm-exception-while-processing-transaction-revert-8cd856633793
