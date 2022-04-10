@@ -345,6 +345,7 @@ export class OpenAirComponent extends Component {
               Speak
             </Label>
           </Button>
+          <p>(Charge per speech: {this.state.openAir.chargePerSpeech})</p>
         </Table.Cell>
         <Table.Cell>
           <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_VOTING})}}>
@@ -353,6 +354,7 @@ export class OpenAirComponent extends Component {
               Enter and Vote
             </Label>
           </Button>
+          <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
         </Table.Cell>        
         </Table.Row>
         </Table.Body>
