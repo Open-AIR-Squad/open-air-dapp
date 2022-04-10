@@ -116,9 +116,9 @@ export class OpenAirComponent extends Component {
     
       } catch (error) {
         if (error.code === 4001) {
-          alert("User rejected request.")
+          console.log("User rejected request.")
         }
-        alert(error)
+        console.log(error)
       }
     }
 
@@ -279,12 +279,11 @@ export class OpenAirComponent extends Component {
     this.setState({
       openAir: openAirState
     })
-    alert("Participated.")
+    console.log("Participated.")
   }
 
   workspaceUI() {  
     if (this.state.workspaceMode === this.WORKSPACE_MODE_SPEAKING) {
-      //alert('in speaking mode.'); 
       return  <Segment inverted color="green">
         <Form inverted onSubmit={this.onSubmitSpeech}>
           <Form.Input fluid label='Title' placeholder={this.state.newSpeechTitle} onChange={(e) => this.setState({newSpeechTitle: e.target.value})}/>
@@ -408,7 +407,7 @@ export class OpenAirComponent extends Component {
       openAir: openAirState,
       workspaceMode: this.WORKSPACE_MODE_NONE
     })
-    alert("Submitted.")
+    console.log("Submitted.")
   }
 
   getPanes(tabNames, tabType) {
