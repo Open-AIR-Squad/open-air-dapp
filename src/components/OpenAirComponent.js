@@ -331,7 +331,7 @@ export class OpenAirComponent extends Component {
             Done
             <Icon name='arrow circle right' />
           </Form.Button>
-          <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
+          <p>(Charge per vote: {this.state.openAir.chargePerVote}; award per follower: {this.state.openAir.awardToVoterPerFollower})</p>
         </Form>
       </Segment>      
     } else {   //this.WORKSPACE_MODE_NONE
@@ -345,7 +345,7 @@ export class OpenAirComponent extends Component {
               Speak
             </Label>
           </Button>
-          <p>(Charge per speech: {this.state.openAir.chargePerSpeech})</p>
+          <p>(Charge per speech: {this.state.openAir.chargePerSpeech}; award per upvote received: {this.state.openAir.awardToSpeakerPerUpVote})</p>
         </Table.Cell>
         <Table.Cell>
           <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_VOTING})}}>
