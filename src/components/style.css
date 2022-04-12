@@ -1,0 +1,7 @@
+.container__table {
+    background: #ccc;
+    float: none;
+    overflow: hidden;
+    /*width: 800px;*/
+    overflow-x: auto;  /* or scroll */
+}

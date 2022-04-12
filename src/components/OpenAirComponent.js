@@ -3,7 +3,7 @@ import { getOpenAirInstance } from '../web3/openAirContract'
 import { getOpinionTokenInstance } from '../web3/opinionTokenContract'
 import { getSpeechInstance } from '../web3/speechContract'
 import { Header, Form, Divider, Segment, Button, Icon, Label, Tab, Table} from 'semantic-ui-react'
-
+import './style.css';
 
 export class OpenAirComponent extends Component {
 
@@ -116,9 +116,9 @@ export class OpenAirComponent extends Component {
     
       } catch (error) {
         if (error.code === 4001) {
-          alert("User rejected request.")
+          console.log("User rejected request.")
         }
-        alert(error)
+        console.log(error)
       }
     }
 
@@ -279,12 +279,11 @@ export class OpenAirComponent extends Component {
     this.setState({
       openAir: openAirState
     })
-    alert("Participated.")
+    console.log("Participated.")
   }
 
   workspaceUI() {  
     if (this.state.workspaceMode === this.WORKSPACE_MODE_SPEAKING) {
-      //alert('in speaking mode.'); 
       return  <Segment inverted color="green">
         <Form inverted onSubmit={this.onSubmitSpeech}>
           <Form.Input fluid label='Title' placeholder={this.state.newSpeechTitle} onChange={(e) => this.setState({newSpeechTitle: e.target.value})}/>
@@ -304,6 +303,7 @@ export class OpenAirComponent extends Component {
           <Form.Input fluid label='Title' placeholder={this.state.openAir.speechTitles[this.state.selectedSpeechIndex]}/>
           <Form.TextArea label='Speech' placeholder={this.state.openAir.speechContents[this.state.selectedSpeechIndex]} />
         </Form>
+        <Divider />
         <Form>
           <Form.Group inline>
             <label>Vote</label>
@@ -331,7 +331,7 @@ export class OpenAirComponent extends Component {
             Done
             <Icon name='arrow circle right' />
           </Form.Button>
-          <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
+          <p>(Charge per vote: {this.state.openAir.chargePerVote}; award per follower: {this.state.openAir.awardToVoterPerFollower})</p>
         </Form>
       </Segment>      
     } else {   //this.WORKSPACE_MODE_NONE
@@ -345,6 +345,7 @@ export class OpenAirComponent extends Component {
               Speak
             </Label>
           </Button>
+          <p>(Charge per speech: {this.state.openAir.chargePerSpeech}; award per upvote received: {this.state.openAir.awardToSpeakerPerUpVote})</p>
         </Table.Cell>
         <Table.Cell>
           <Button as='div' labelPosition='right' size='huge' onClick={()=>{this.setState({workspaceMode : this.WORKSPACE_MODE_VOTING})}}>
@@ -353,6 +354,7 @@ export class OpenAirComponent extends Component {
               Enter and Vote
             </Label>
           </Button>
+          <p>(Charge per vote: {this.state.openAir.chargePerVote})</p>
         </Table.Cell>        
         </Table.Row>
         </Table.Body>
@@ -407,7 +409,7 @@ export class OpenAirComponent extends Component {
       openAir: openAirState,
       workspaceMode: this.WORKSPACE_MODE_NONE
     })
-    alert("Submitted.")
+    console.log("Submitted.")
   }
 
   getPanes(tabNames, tabType) {
@@ -424,28 +426,28 @@ export class OpenAirComponent extends Component {
   getPaneContent(tabName, tabType) {
     var content //= tabName + ' Subject Areas'
     if (tabType === this.TAB_TYPE_AREA) {
-      content = this.areaInteractionSection(tabName)
+      content = this.areaPaneContent(tabName)
     } 
     return content
   }
 
-  areaInteractionSection(areaName) {
-    //return areaName + ' area'
+  areaPaneContent(areaName) {
+
     return <div>
         <Button primary onClick={this.onParticipate}>
           <Icon name='hand paper'/>
           Participate
         </Button> 
         <p>(Award per area participation: {this.state.openAir.awardPerAreaParticipation})</p>
-        <div>
+        <div className="container__table">
           <Table celled singleLine compact size="small" selectable>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Index</Table.HeaderCell>
-                <Table.HeaderCell>Speaker</Table.HeaderCell>
                 <Table.HeaderCell>Title</Table.HeaderCell>
                 <Table.HeaderCell></Table.HeaderCell>
                 <Table.HeaderCell></Table.HeaderCell>
+                <Table.HeaderCell>Speaker</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>{this.renderSpeechRows()}</Table.Body>
@@ -466,10 +468,10 @@ export class OpenAirComponent extends Component {
           }}
         >
           <Table.Cell title={item.index}>{item.index}</Table.Cell>
-          <Table.Cell title={item.title}>{item.author}</Table.Cell>
           <Table.Cell title={item.title}>{item.title}</Table.Cell>
           <Table.Cell title={item.title}> {this.iconLabelsField('green', 'thumbs up', '', this.state.openAir.speechUpVoteCounts[item.index])}  </Table.Cell>
           <Table.Cell title={item.title}> {this.iconLabelsField('red', 'thumbs down', '', this.state.openAir.speechDownVoteCounts[item.index])} </Table.Cell>
+          <Table.Cell title={item.title}>{item.author}</Table.Cell>
         </Table.Row>
       );
     });
